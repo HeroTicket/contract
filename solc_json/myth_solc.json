@@ -1,3 +1,5 @@
 {
-    "remappings": ["@openzeppelin-contracts/utils/Create2.sol=node_modules/@openzeppelin/contracts/utils/Create2.sol"]
+    "remappings": ["@openzeppelin-contracts/utils/Create2.sol=node_modules/@openzeppelin/contracts/utils/Create2.sol",
+    "@openzeppelin/contracts/access/Ownable.sol=node_modules/@openzeppelin/contracts/access/Ownable.sol",
+    "@openzeppelin/contracts/utils/Counters.sol=node_modules/@openzeppelin/contracts/utils/Counters.sol"]
 }
