@@ -5,6 +5,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/Counters.sol";
 
+error NonexistentToken(uint256 _tokenId);
+error NotOwner(uint256 _tokenId, address sender);
+
 contract Ticket is ERC721, Ownable, Counters {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -15,11 +18,12 @@ contract Ticket is ERC721, Ownable, Counters {
     ) ERC721(ticketName, ticketSymbol) {}
 
     // ticketData 저장
-    mapping(uint256 => ticketData) public _ticketData;
+    mapping(uint256 => string) public _ticketURI;
     // ticket이 구매확정 여부 저장(구매 후 신원인증을 진행 했는지)
     mapping(uint256 => bool) public _ticketSelled;
-    // ticket 구매 확정 시 구매자 주소 저장
-    mapping(uint256 => address) public _ticketBuyer;
+    // address별 TBA 저장
+    // owner address => nft address => TBA address
+    mapping((address => address)=>address) public _ownerTBA;
 
     // ticket Name 확인
     function ticketName(uint256 _tokenId) public view returns (string memory) {
@@ -41,26 +45,45 @@ contract Ticket is ERC721, Ownable, Counters {
         return ownerOf(_tokenId) == msg.sender;
     }
 
+    // onwer의 TBA 확인
+    function ownerTBA(address _owner, address _nftAddress) public view returns (address) {
+        return _ownerTBA[_owner][_nftAddress];
+    }
+
     // Ticket mint
     // IPFS에 저장할 것인지 온체인에 저장할 것인지??
-    function mint(
+    function mintTicket(
         address _to,
-        string calldata _name,
-        string calldata description
+        string calldata _tokenURI
     ) public onlyOwner returns (uint256) {
-        _tokenIds.increment();
-        uint256 newTicketId = _tokenIds.current();
-        _mint(_to, newTicketId);
-        _ticketData[newTicketId] = ticketData(_name, description);
+        return _mintTicket(_to, _tokenURI);
     }
 
     // 구매자의 지갑(TBA)로 티켓 전송
-    function transferTicket(uint256 _tokenId) public {
+    function transferTicket(uint256 _tokenId, string calldata _address) public {
         require(!isTicketSelled(_tokenId), "Ticket is already selled");
+        if (ownerof(_tokenId) != msg.sender) {
+            revert NotOwner(_tokenId, msg.sender);
+        }
         _transfer(msg.sender, _ticketBuyer[_tokenId], _tokenId);
     }
 
-    function _mint(address _to, ) {
-        
+    function _mintTicket(
+        address _to,
+        string calldata _tokenURI
+    ) internal virtual returns (uint256) {
+        uint256 newTicketId = _tokenIds.current();
+        _tokenIds.increment();
+        _mint(_to, newTicketId);
+        _setTokenURI(newTicketId, _tokenURI);
+        ticketSelled[newTicketId] = false;
+        return newTicketId;
+    }
+
+    function _setTokenURI(
+        uint256 _tokenId,
+        string memory _tokenURI
+    ) internal virtual {
+        _ticketURI[_tokenId] = _tokenURI;
     }
 }

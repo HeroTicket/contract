@@ -1,80 +1,125 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/utils/Create2.sol";
+interface IERC6551Registry {
+    event ERC6551AccountCreated(
+        address account,
+        address indexed implementation,
+        bytes32 salt,
+        uint256 chainId,
+        address indexed tokenContract,
+        uint256 indexed tokenId
+    );
 
-contract ERC6551Registry is IERC6551Registry {
-    error InitializationFailed();
+    error AccountCreationFailed();
 
     function createAccount(
         address implementation,
+        bytes32 salt,
         uint256 chainId,
         address tokenContract,
-        uint256 tokenId,
-        uint256 salt,
-        bytes calldata initData
+        uint256 tokenId
+    ) external returns (address account);
+
+    function account(
+        address implementation,
+        bytes32 salt,
+        uint256 chainId,
+        address tokenContract,
+        uint256 tokenId
+    ) external view returns (address account);
+}
+
+contract ERC6551Registry is IERC6551Registry {
+    function createAccount(
+        address implementation,
+        bytes32 salt,
+        uint256 chainId,
+        address tokenContract,
+        uint256 tokenId
     ) external returns (address) {
-        bytes memory code = _creationCode(
-            implementation,
-            chainId,
-            tokenContract,
-            tokenId,
-            salt
-        );
+        assembly {
+            pop(chainId)
+            // Copy bytecode + constant data to memory
+            calldatacopy(0x8c, 0x24, 0x80) // salt, chainId, tokenContract, tokenId
+            mstore(0x6c, 0x5af43d82803e903d91602b57fd5bf3) // ERC-1167 footer
+            mstore(0x5d, implementation) // implementation
+            mstore(0x49, 0x3d60ad80600a3d3981f3363d3d373d3d3d363d73) // ERC-1167 constructor + header
 
-        address _account = Create2.computeAddress(
-            bytes32(salt),
-            keccak256(code)
-        );
+            // Copy create2 computation data to memory
+            mstore8(0x00, 0xff) // 0xFF
+            mstore(0x35, keccak256(0x55, 0xb7)) // keccak256(bytecode)
+            mstore(0x01, shl(96, address())) // registry address
+            mstore(0x15, salt) // salt
 
-        if (_account.code.length != 0) return _account;
+            // Compute account address
+            let computed := keccak256(0x00, 0x55)
 
-        _account = Create2.deploy(0, bytes32(salt), code);
+            // If the account has not yet been deployed
+            if iszero(extcodesize(computed)) {
+                // Deploy account contract
+                let deployed := create2(0, 0x55, 0xb7, salt)
 
-        if (initData.length != 0) {
-            (bool success, ) = _account.call(initData);
-            if (!success) revert InitializationFailed();
+                // Revert if the deployment fails
+                if iszero(deployed) {
+                    mstore(0x00, 0x20188a59) // `AccountCreationFailed()`
+                    revert(0x1c, 0x04)
+                }
+
+                // Store account address in memory before salt and chainId
+                mstore(0x6c, deployed)
+
+                // Emit the ERC6551AccountCreated event
+                log4(
+                    0x6c,
+                    0x60,
+                    // `ERC6551AccountCreated(address,address,bytes32,uint256,address,uint256)`
+                    0x79f19b3655ee38b1ce526556b7731a20c8f218fbda4a3990b6cc4172fdf88722,
+                    implementation,
+                    tokenContract,
+                    tokenId
+                )
+
+                // Return the account address
+                return(0x6c, 0x20)
+            }
+
+            // Otherwise, return the computed account address
+            mstore(0x00, shr(96, shl(96, computed)))
+            return(0x00, 0x20)
         }
-
-        emit AccountCreated(
-            _account,
-            implementation,
-            chainId,
-            tokenContract,
-            tokenId,
-            salt
-        );
-
-        return _account;
     }
 
     function account(
         address implementation,
+        bytes32 salt,
         uint256 chainId,
         address tokenContract,
-        uint256 tokenId,
-        uint256 salt
+        uint256 tokenId
     ) external view returns (address) {
-        bytes32 bytecodeHash = keccak256(
-            _creationCode(implementation, chainId, tokenContract, tokenId, salt)
-        );
+        assembly {
+            // Silence unused variable warnings
+            pop(chainId)
+            pop(tokenContract)
+            pop(tokenId)
 
-        return Create2.computeAddress(bytes32(salt), bytecodeHash);
-    }
+            // Copy bytecode + constant data to memory
+            calldatacopy(0x8c, 0x24, 0x80) // salt, chainId, tokenContract, tokenId
+            mstore(0x6c, 0x5af43d82803e903d91602b57fd5bf3) // ERC-1167 footer
+            mstore(0x5d, implementation) // implementation
+            mstore(0x49, 0x3d60ad80600a3d3981f3363d3d373d3d3d363d73) // ERC-1167 constructor + header
 
-    function _creationCode(
-        address implementation_,
-        uint256 chainId_,
-        address tokenContract_,
-        uint256 tokenId_,
-        uint256 salt_
-    ) internal pure returns (bytes memory) {
-        return
-            abi.encodePacked(
-                hex"3d60ad80600a3d3981f3363d3d373d3d3d363d73",
-                implementation_,
-                hex"5af43d82803e903d91602b57fd5bf3",
-                abi.encode(salt_, chainId_, tokenContract_, tokenId_)
-            );
+            // Copy create2 computation data to memory
+            mstore8(0x00, 0xff) // 0xFF
+            mstore(0x35, keccak256(0x55, 0xb7)) // keccak256(bytecode)
+            mstore(0x01, shl(96, address())) // registry address
+            mstore(0x15, salt) // salt
+
+            // Store computed account address in memory
+            mstore(0x00, shr(96, shl(96, keccak256(0x00, 0x55))))
+
+            // Return computed account address
+            return(0x00, 0x20)
+        }
     }
 }
