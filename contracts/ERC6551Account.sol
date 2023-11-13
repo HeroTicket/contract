@@ -13,30 +13,36 @@ contract ExampleERC6551Account is
     IERC6551Account,
     IERC6551Executable
 {
-    uint256 public state;
-
+    // 외부 계정으로부터 이더를 받을 수 있게하는 fallback 함수
     receive() external payable {}
 
-    function execute(
-        address to,
-        uint256 value,
-        bytes calldata data,
-        uint256 operation
-    ) external payable returns (bytes memory result) {
-        require(_isValidSigner(msg.sender), "Invalid signer");
-        require(operation == 0, "Only call operations are supported");
+    // function execute(
+    //     address to,
+    //     uint256 value,
+    //     bytes calldata data,
+    //     uint256 operation
+    // ) external payable returns (bytes memory result) {
+    //     require(_isValidSigner(msg.sender), "Invalid signer");
+    //     require(operation == 0, "Only call operations are supported");
 
-        ++state;
+    //     ++state;
 
-        bool success;
-        (success, result) = to.call{value: value}(data);
+    //     bool success;
+    //     (success, result) = to.call{value: value}(data);
 
-        if (!success) {
-            assembly {
-                revert(add(result, 32), mload(result))
-            }
-        }
-    }
+    //     if (!success) {
+    //         assembly {
+    //             revert(add(result, 32), mload(result))
+    //         }
+    //     }
+    // }
+
+    // TBA 동작 함수 정의
+    // TBA 계정 정보 저장 mapping
+
+    // Ticket 전송
+
+    // Ticket 정보 불러오기
 
     function isValidSigner(
         address signer,
