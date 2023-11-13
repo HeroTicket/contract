@@ -3,14 +3,14 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/access/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 error NonexistentToken(uint256 _tokenId);
 error NotOwner(uint256 _tokenId, address sender);
+error AlreadyRegistered(string _ownerAddress, string _nftAddress);
 
-contract Ticket is ERC721, Ownable, Counters {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+contract Ticket is ERC721URIStorage, Ownable {
+    uint256 private _tokenIds;
 
     constructor(
         string ticketName,
@@ -19,11 +19,13 @@ contract Ticket is ERC721, Ownable, Counters {
 
     // ticketData 저장
     mapping(uint256 => string) public _ticketURI;
+
     // ticket이 구매확정 여부 저장(구매 후 신원인증을 진행 했는지)
     mapping(uint256 => bool) public _ticketSelled;
+
     // address별 TBA 저장
     // owner address => nft address => TBA address
-    mapping((address => address)=>address) public _ownerTBA;
+    mapping(address => mapping(address => address)) public _ownerTBA;
 
     // ticket Name 확인
     function ticketName(uint256 _tokenId) public view returns (string memory) {
@@ -45,13 +47,27 @@ contract Ticket is ERC721, Ownable, Counters {
         return ownerOf(_tokenId) == msg.sender;
     }
 
+    // owner address => nft address => TBA address 등록
+    function updateTBA(
+        string calldata _ownerAddress,
+        string calldata _nftAddress,
+        string calldata _tbaAddress
+    ) public onlyOwner {
+        if (_ownerTBA[_ownerAddress][_nftAddress] != address(0)) {
+            revert AlreadyRegistered(_ownerAddress, _nftAddress);
+        }
+        _ownerTBA[_ownerAddress][_nftAddress] = _tbaAddress;
+    }
+
     // onwer의 TBA 확인
-    function ownerTBA(address _owner, address _nftAddress) public view returns (address) {
+    function ownerTBA(
+        address _owner,
+        address _nftAddress
+    ) public view returns (address) {
         return _ownerTBA[_owner][_nftAddress];
     }
 
     // Ticket mint
-    // IPFS에 저장할 것인지 온체인에 저장할 것인지??
     function mintTicket(
         address _to,
         string calldata _tokenURI
@@ -73,17 +89,10 @@ contract Ticket is ERC721, Ownable, Counters {
         string calldata _tokenURI
     ) internal virtual returns (uint256) {
         uint256 newTicketId = _tokenIds.current();
-        _tokenIds.increment();
+        _tokenIds += 1;
         _mint(_to, newTicketId);
         _setTokenURI(newTicketId, _tokenURI);
         ticketSelled[newTicketId] = false;
         return newTicketId;
-    }
-
-    function _setTokenURI(
-        uint256 _tokenId,
-        string memory _tokenURI
-    ) internal virtual {
-        _ticketURI[_tokenId] = _tokenURI;
     }
 }
