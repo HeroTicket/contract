@@ -39,6 +39,20 @@ contract ExampleERC6551Account is
 
     // TBA 동작 함수 정의
     // TBA 계정 정보 저장 mapping
+    // owner address => nft address => TBA address
+    mapping(address => mapping(address => address)) public _ownerTBA;
+
+    // owner address => nft address => TBA address 등록
+    function updateTBA(
+        string calldata _ownerAddress,
+        string calldata _nftAddress,
+        string calldata _tbaAddress
+    ) public onlyOwner {
+        if (_ownerTBA[_ownerAddress][_nftAddress] != address(0)) {
+            revert AlreadyRegistered(_ownerAddress, _nftAddress);
+        }
+        _ownerTBA[_ownerAddress][_nftAddress] = _tbaAddress;
+    }
 
     // Ticket 전송
 

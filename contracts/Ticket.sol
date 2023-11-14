@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "./ERC6551Account.sol";
 
 error NonexistentToken(uint256 _tokenId);
 error NotOwner(uint256 _tokenId, address sender);
@@ -11,6 +12,8 @@ error AlreadyRegistered(string _ownerAddress, string _nftAddress);
 
 contract Ticket is ERC721URIStorage, Ownable {
     uint256 private _tokenIds;
+
+    ERC6551Account private _ercAccount;
 
     constructor(
         string ticketName,
@@ -22,10 +25,6 @@ contract Ticket is ERC721URIStorage, Ownable {
 
     // ticket이 구매확정 여부 저장(구매 후 신원인증을 진행 했는지)
     mapping(uint256 => bool) public _ticketSelled;
-
-    // address별 TBA 저장
-    // owner address => nft address => TBA address
-    mapping(address => mapping(address => address)) public _ownerTBA;
 
     // ticket Name 확인
     function ticketName(uint256 _tokenId) public view returns (string memory) {
@@ -47,24 +46,12 @@ contract Ticket is ERC721URIStorage, Ownable {
         return ownerOf(_tokenId) == msg.sender;
     }
 
-    // owner address => nft address => TBA address 등록
-    function updateTBA(
-        string calldata _ownerAddress,
-        string calldata _nftAddress,
-        string calldata _tbaAddress
-    ) public onlyOwner {
-        if (_ownerTBA[_ownerAddress][_nftAddress] != address(0)) {
-            revert AlreadyRegistered(_ownerAddress, _nftAddress);
-        }
-        _ownerTBA[_ownerAddress][_nftAddress] = _tbaAddress;
-    }
-
     // onwer의 TBA 확인
     function ownerTBA(
         address _owner,
         address _nftAddress
     ) public view returns (address) {
-        return _ownerTBA[_owner][_nftAddress];
+        return _ercAccount._ownerTBA[_owner][_nftAddress];
     }
 
     // Ticket mint
