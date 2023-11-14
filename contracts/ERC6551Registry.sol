@@ -1,39 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-interface IERC6551Registry {
-    event ERC6551AccountCreated(
-        address account,
-        address indexed implementation,
-        bytes32 salt,
-        uint256 chainId,
-        address indexed tokenContract,
-        uint256 indexed tokenId
-    );
-
-    error AccountCreationFailed();
-
-    function createAccount(
-        address implementation,
-        bytes32 salt,
-        uint256 chainId,
-        address tokenContract,
-        uint256 tokenId
-    ) external returns (address account);
-
-    function account(
-        address implementation,
-        bytes32 salt,
-        uint256 chainId,
-        address tokenContract,
-        uint256 tokenId
-    ) external view returns (address account);
-}
+import "@openzeppelin/contracts/utils/Create2.sol";
+import "../interfaces/IERC6551Registry.sol";
 
 contract ERC6551Registry is IERC6551Registry {
     function createAccount(
         address implementation,
-        bytes32 salt,
+        uint256 salt,
         uint256 chainId,
         address tokenContract,
         uint256 tokenId
@@ -50,7 +24,7 @@ contract ERC6551Registry is IERC6551Registry {
             mstore8(0x00, 0xff) // 0xFF
             mstore(0x35, keccak256(0x55, 0xb7)) // keccak256(bytecode)
             mstore(0x01, shl(96, address())) // registry address
-            mstore(0x15, salt) // salt
+            mstore(0x15, bytes32(salt)) // salt
 
             // Compute account address
             let computed := keccak256(0x00, 0x55)
@@ -92,7 +66,7 @@ contract ERC6551Registry is IERC6551Registry {
 
     function account(
         address implementation,
-        bytes32 salt,
+        uint256 salt,
         uint256 chainId,
         address tokenContract,
         uint256 tokenId
@@ -113,7 +87,7 @@ contract ERC6551Registry is IERC6551Registry {
             mstore8(0x00, 0xff) // 0xFF
             mstore(0x35, keccak256(0x55, 0xb7)) // keccak256(bytecode)
             mstore(0x01, shl(96, address())) // registry address
-            mstore(0x15, salt) // salt
+            mstore(0x15, bytes32(salt)) // salt
 
             // Store computed account address in memory
             mstore(0x00, shr(96, shl(96, keccak256(0x00, 0x55))))
