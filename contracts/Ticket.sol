@@ -11,7 +11,7 @@ error NotOwner(uint256 _tokenId, address sender);
 error AlreadyRegistered(string _ownerAddress, string _nftAddress);
 
 contract Ticket is ERC721URIStorage, Ownable {
-    uint256 private _tokenIds;
+    uint256 private _ticketIds;
 
     ERC6551Account private _ercAccount;
 
@@ -26,32 +26,40 @@ contract Ticket is ERC721URIStorage, Ownable {
     // ticket이 구매확정 여부 저장(구매 후 신원인증을 진행 했는지)
     mapping(uint256 => bool) public _ticketSelled;
 
+    // 소유자의 티켓 List 저장
+    mapping(address => uint256[]) public _ticketList;
+
     // ticket Name 확인
-    function ticketName(uint256 _tokenId) public view returns (string memory) {
-        return _ticketData[_tokenId].name;
+    function ticketName(uint256 _ticketId) public view returns (string memory) {
+        return _ticketData[_ticketId].name;
     }
 
     // ticket 구매확정 여부 확인
-    function isTicketSelled(uint256 _tokenId) public view returns (bool) {
-        return _ticketSelled[_tokenId];
+    function isTicketSelled(uint256 _ticketId) public view returns (bool) {
+        return _ticketSelled[_ticketId];
     }
 
     // ticket 구매자 주소 확인
-    function ticketOwner(uint256 _tokenId) public view returns (address) {
-        return ownerOf(_tokenId);
+    function ticketOwner(uint256 _ticketId) public view returns (address) {
+        return ownerOf(_ticketId);
     }
 
     // ticket 구매자가 맞는지 확인
-    function isTicketOwner(uint256 _tokenId) public view returns (bool) {
-        return ownerOf(_tokenId) == msg.sender;
+    function isTicketOwner(uint256 _ticketId) public view returns (bool) {
+        return ownerOf(_ticketId) == msg.sender;
     }
 
-    // onwer의 TBA 확인
+    // onwer의 확인
     function ownerTBA(
         address _owner,
         address _nftAddress
     ) public view returns (address) {
         return _ercAccount._ownerTBA[_owner][_nftAddress];
+    }
+
+    // 보유중인 티켓확인
+    function myTicketList() public view returns (uint256[] memory) {
+        return _ticketList[msg.sender];
     }
 
     // Ticket mint
@@ -70,6 +78,9 @@ contract Ticket is ERC721URIStorage, Ownable {
         }
         _transfer(msg.sender, _ticketBuyer[_tokenId], _tokenId);
     }
+
+    // TBA안에 있는 NFT List가져오기
+    // _ticketURI에서
 
     function _mintTicket(
         address _to,

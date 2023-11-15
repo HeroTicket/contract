@@ -7,45 +7,27 @@ import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "../interfaces/IERC6551Account.sol";
 import "../interfaces/IERC6551Executable.sol";
+import "./Ticket.sol";
 
 contract ExampleERC6551Account is
     IERC1271,
     IERC6551Account,
     IERC6551Executable
 {
+    Ticket private _ticket;
+
     // 외부 계정으로부터 이더를 받을 수 있게하는 fallback 함수
     receive() external payable {}
 
-    // function execute(
-    //     address to,
-    //     uint256 value,
-    //     bytes calldata data,
-    //     uint256 operation
-    // ) external payable returns (bytes memory result) {
-    //     require(_isValidSigner(msg.sender), "Invalid signer");
-    //     require(operation == 0, "Only call operations are supported");
-
-    //     ++state;
-
-    //     bool success;
-    //     (success, result) = to.call{value: value}(data);
-
-    //     if (!success) {
-    //         assembly {
-    //             revert(add(result, 32), mload(result))
-    //         }
-    //     }
-    // }
-
     // TBA 동작 함수 정의
     // TBA 계정 정보 저장 mapping
-    // owner address => nft address => TBA address
-    mapping(address => mapping(address => address)) public _ownerTBA;
+    // owner address => nftId => TBA address
+    mapping(address => mapping(uint256 => address)) public _ownerTBA;
 
     // owner address => nft address => TBA address 등록
     function updateTBA(
         string calldata _ownerAddress,
-        string calldata _nftAddress,
+        uint256 calldata _nftId,
         string calldata _tbaAddress
     ) public onlyOwner {
         if (_ownerTBA[_ownerAddress][_nftAddress] != address(0)) {
@@ -54,7 +36,19 @@ contract ExampleERC6551Account is
         _ownerTBA[_ownerAddress][_nftAddress] = _tbaAddress;
     }
 
-    // Ticket 전송
+    // Ticket 확인
+    // msg.sender의 TBA안에 들어있는 티켓NFT의 정보를 확인
+    function myTicket(_tokenId) public {
+        // msg.sender의 _nftId가 존재하는지 확인
+        require(
+            _ownerTBA[msg.sender][_tokenId] != address(0),
+            "NonexistentToken"
+        );
+        // nft의 TBA 계정 주소를 가져온다
+        address ownerTBA = _ownerTBA[msg.sender][_tokenId];
+        // TBA안에 들어있는 NFT들을 가져온다
+        address[] memory nftList = _ticket.getNFTList(ownerTBA);
+    }
 
     // Ticket 정보 불러오기
 

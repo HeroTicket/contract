@@ -10,6 +10,8 @@ contract NFTFactory is ERC721URIStorage, Ownable {
 
     constructor() ERC721("Hero Ticket NFT", "HTN") {}
 
+    mapping(address => uint256) private _ownNFTIds;
+
     function mintNFT(
         address recipient,
         string memory tokenURI
