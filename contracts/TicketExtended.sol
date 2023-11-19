@@ -17,25 +17,27 @@ contract TicketExtended is ERC721URIStorage {
     ERC6551Account private _account;
     NFTFactory private _nftFactory;
 
-    ERC6551Account accountContract = new ERC6551Account();
-
-    constructor() ERC721("Hero Ticket", "HT") {}
+    constructor() ERC721("Hero Ticket", "HT") {
+        _nftFactory = new NFTFactory();
+        _account = new ERC6551Account();
+        _registry = new ERC6551Registry();
+    }
 
     event minted(uint256 tokenId);
 
     // NFT Factory로 부터 Hero Ticket NFT 생성 및 TBA 생성
-    function mint(address to, string memory tokenURI) external payable {
+    function mint(
+        address to,
+        string memory tokenURI
+    ) external payable returns (uint256, address) {
         uint256 tokenId = _tokenIds.current();
         _tokenIds.increment();
 
         uint256 salt = generateRandomSalt();
 
-        // hash X
-        // bytes memory emptyBytes = "";
-
         // TBA account 생성
         address accountAddress = _registry.createAccount(
-            address(accountContract),
+            address(_account),
             bytes32(salt),
             block.chainid,
             address(_nftFactory),
@@ -43,7 +45,7 @@ contract TicketExtended is ERC721URIStorage {
         );
 
         address expectAddress = _registry.account(
-            address(accountContract),
+            address(_account),
             bytes32(salt),
             block.chainid,
             address(_nftFactory),
@@ -55,6 +57,7 @@ contract TicketExtended is ERC721URIStorage {
         uint256 newNFTId = _nftFactory.mintNFT(to, tokenURI);
 
         emit minted(tokenId);
+        return (newNFTId, accountAddress);
     }
 
     function getNonce() public view returns (uint256) {
