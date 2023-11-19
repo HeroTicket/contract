@@ -36,6 +36,7 @@ contract Ticket is ERC721URIStorage, Ownable {
         address _to,
         string calldata _tokenURI
     ) public onlyOwner returns (uint256) {
+        require(_whiteList[_to], "recipient is not in white list");
         return _mintTicket(_to, _tokenURI);
     }
 
@@ -46,8 +47,18 @@ contract Ticket is ERC721URIStorage, Ownable {
             ownerOf(_tokenId) == msg.sender,
             "Not the owner of this ticket"
         );
+        require(_whiteList[msg.sender], "Not White List Member");
 
         _transfer(msg.sender, _buyer, _tokenId);
+    }
+
+    function updateWhiteList(address to) public onlyOwner returns (bool) {
+        if (_whiteList[to] == true) {
+            return false;
+        } else {
+            _whiteList[to] = true;
+            return true;
+        }
     }
 
     function _mintTicket(
