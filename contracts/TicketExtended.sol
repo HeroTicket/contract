@@ -1,54 +1,69 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./Ticket.sol";
 import "./ERC6551Account.sol";
 import "./ERC6551Registry.sol";
-import "../interfaces/IERC6551Account.sol";
 import "./NFTFactory.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+
+// error 정의
 
 contract TicketExtended is ERC721URIStorage {
-    uint256 private _tokenId;
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
 
     ERC6551Registry private _registry;
     ERC6551Account private _account;
     NFTFactory private _nftFactory;
 
-    event minted(uint256);
+    ERC6551Account accountContract = new ERC6551Account();
+
+    constructor() ERC721("Hero Ticket", "HT") {}
+
+    event minted(uint256 tokenId);
 
     // NFT Factory로 부터 Hero Ticket NFT 생성 및 TBA 생성
     function mint(address to, string memory tokenURI) external payable {
-        _tokenId++;
-        _accountContract = new ERC6551Account();
-        uint256 salt = generateRandomSalt();
-        // TBA account 생성
-        _accountAddress = _registry.createAccount(
-            address(_accountContract),
-            salt,
-            block.chainid,
-            address(_nftFactory),
-            _tokenId
-        );
-        _expectAddress = _registry.account(
-            address(_accountContract),
-            salt,
-            block.chainid,
-            address(_nftFactory),
-            _tokenId
-        );
-        require(_accountAddress == _expectAddress, "Account creation failed");
+        uint256 tokenId = _tokenIds.current();
+        _tokenIds.increment();
 
-        uint256 _newNFTId = _nftFactory.mintNFT(to, tokenURI);
-        _nftFactory._setTokenURI(tokenId, _tokenURI);
-        // Account contract에 사용자 TBA정보 저장
-        _account.updateTBA(to, _newNFTId, _accountAddress);
-        _nftFactory._ownNFTIds[to] = _newNFTId;
-        emit minted(_tokenId);
+        uint256 salt = generateRandomSalt();
+
+        // hash X
+        // bytes memory emptyBytes = "";
+
+        // TBA account 생성
+        address accountAddress = _registry.createAccount(
+            address(accountContract),
+            bytes32(salt),
+            block.chainid,
+            address(_nftFactory),
+            tokenId
+        );
+
+        address expectAddress = _registry.account(
+            address(accountContract),
+            bytes32(salt),
+            block.chainid,
+            address(_nftFactory),
+            tokenId
+        );
+
+        require(accountAddress == expectAddress, "Account creation failed");
+
+        uint256 newNFTId = _nftFactory.mintNFT(to, tokenURI);
+
+        emit minted(tokenId);
+    }
+
+    function getNonce() public view returns (uint256) {
+        return _nftFactory.getTransactionCount(msg.sender);
     }
 
     function generateRandomSalt() internal view returns (uint256) {
         bytes32 hash = keccak256(
-            abi.encodePacked(block.timestamp, msg.sender, nonce())
+            abi.encodePacked(block.timestamp, msg.sender, getNonce())
         );
         return uint256(hash);
     }
