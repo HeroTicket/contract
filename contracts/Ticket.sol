@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol"; // Counters 추가
 import "./ERC6551Account.sol";
-import "./interfaces/ITicket.sol";
 
 error NonexistentToken(uint256 _tokenId);
 error NotOwner(uint256 _tokenId, address sender);
@@ -14,7 +13,7 @@ error AlreadyRegistered(string _ownerAddress, string _nftAddress);
 
 // 보안 강화?
 
-contract Ticket is ERC721URIStorage, Ownable, ITicket {
+contract Ticket is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter; // Counters 사용
     Counters.Counter private _tokenIds; // _tokenIds를 Counters.Counter로 변경
 
@@ -50,7 +49,7 @@ contract Ticket is ERC721URIStorage, Ownable, ITicket {
         );
         require(_whiteList[msg.sender], "Not White List Member");
 
-        _transfer(msg.sender, _buyer, _tokenId);
+        safeTransferFrom(msg.sender, _buyer, _tokenId);
     }
 
     function updateWhiteList(address to) public onlyOwner returns (bool) {

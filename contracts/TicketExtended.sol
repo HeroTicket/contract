@@ -6,10 +6,16 @@ import "./ERC6551Registry.sol";
 import "./NFTFactory.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "./interfaces/ITicketExtended.sol";
 
 // error 정의
 
-contract TicketExtended is ERC721URIStorage {
+contract TicketExtended is
+    ERC721URIStorage,
+    Ownable(msg.sender),
+    ITicketExtended
+{
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -58,6 +64,14 @@ contract TicketExtended is ERC721URIStorage {
 
         emit minted(tokenId);
         return (newNFTId, accountAddress);
+    }
+
+    function executeCall(
+        address ticketContractAddress,
+        uint256 tokenId,
+        address to
+    ) public onlyOwner {
+        _account.execute(ticketContractAddress, tokenId, to);
     }
 
     function getNonce() public view returns (uint256) {
