@@ -13,7 +13,7 @@ interface ITicketExtended {
         address ticketContractAddress,
         uint256 tokenId,
         address to
-    ) external;
+    ) external payable;
 
     function getNonce() external view returns (uint256);
 }

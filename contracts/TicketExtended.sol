@@ -70,7 +70,7 @@ contract TicketExtended is
         address ticketContractAddress,
         uint256 tokenId,
         address to
-    ) public onlyOwner {
+    ) external payable {
         _account.execute(ticketContractAddress, tokenId, to);
     }
 
