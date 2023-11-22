@@ -1,10 +1,3 @@
-
-import "./ERC6551Registry.sol";
-import "./NFTFactory.sol";
-확장
-TicketExtended.sol
-3KB
-﻿
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
@@ -19,7 +12,11 @@ import "./interfaces/ITicket.sol";
 error NonexistentToken(uint256 _tokenId);
 error NotOwner(uint256 _tokenId, address sender);
 error AlreadyRegistered(string _ownerAddress, string _nftAddress);
-error InSufficientBalance(address _sender, uint256 _senderBalance ,uint256 _amount);
+error InSufficientBalance(
+    address _sender,
+    uint256 _senderBalance,
+    uint256 _amount
+);
 error PaymentFailed(address _sender, address _recipient, uint256 _amount);
 
 // 보안 강화?
@@ -31,7 +28,6 @@ contract Ticket is ERC721, Ownable {
     ERC6551Account private _ercAccount;
 
     ITicketExtended private _ticketExtended;
-
 
     constructor(
         address _ticketExtededAddress,
@@ -74,9 +70,9 @@ contract Ticket is ERC721, Ownable {
     //     return _mintTicket(tbaAddress, _tokenURI);
     // }
 
-     function buyTicket(
+    function buyTicket(
         string calldata _tokenURI
-    ) public onlyOwner payable returns (uint256) {
+    ) public payable onlyOwner returns (uint256) {
         require(remainTicketAmount > 0, "No more ticket");
         require(_whiteList[msg.sender], "recipient is not in white list");
 
@@ -113,15 +109,19 @@ contract Ticket is ERC721, Ownable {
             return true;
         }
     }
-    
+
     // 결제 대금 인출하는 함수
-    function withdraw(address sender, address recipient, uint256 amount) external payable returns (bool) {
+    function withdraw(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external payable returns (bool) {
         require(_whiteList[sender], "Not White List Member");
         require(recipient == adminAddress, "recipient is not admin");
-        
+
         uint256 senderBalance = _token.balanceOf(sender);
         if (senderBalance < amount) {
-            revert(sender, senderBalance, amount); 
+            revert(sender, senderBalance, amount);
         }
 
         // approve된 금액 확인, 만약 amount보다 작다면 그만큼 approve
