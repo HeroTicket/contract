@@ -9,11 +9,14 @@ interface ITicketExtended {
         string calldata tokenURI
     ) external payable returns (uint256, address);
 
-    function executeCall(
-        address ticketContractAddress,
-        uint256 tokenId,
-        address to
-    ) external payable;
-
-    function getNonce() external view returns (uint256);
+    function issueTicket(
+        address _ticketExtendedAddress,
+        address _tokenAddress,
+        string memory ticketName,
+        string memory ticketSymbol,
+        string memory ticketUri,
+        address initialOwner, // 관리자
+        uint256 ticketAmount,
+        uint256 ticketPrice
+    ) external returns (address);
 }

@@ -68,8 +68,30 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
         return (newNFTId, accountAddress);
     }
 
-    // 티켓 발행 함수
-    function issueTicket() {}
+    // 티켓 발행 함수 티켓 컨트랙트를 발행해서 티켓을 만든다는 것인지 아니면 이벤트에 대한 하나의 티켓을 발행한다는 것인지?
+    function issueTicket(
+        address _ticketExtendedAddress,
+        address _tokenAddress,
+        string memory ticketName,
+        string memory ticketSymbol,
+        string memory ticketUri,
+        address initialOwner, // 관리자
+        uint256 ticketAmount,
+        uint256 ticketPrice
+    ) external onlyOwner returns (address) {
+        _ticket = new Ticket(
+            _ticketExtendedAddress,
+            _tokenAddress,
+            ticketName,
+            ticketSymbol,
+            ticketUri,
+            initialOwner, // 관리자
+            ticketAmount,
+            ticketPrice
+        );
+        address ticketAddress = address(_ticket);
+        return ticketAddress;
+    }
 
     function generateRandomSalt() internal view returns (uint256) {
         bytes32 hash = keccak256(

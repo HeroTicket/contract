@@ -17,22 +17,24 @@ interface ITicket {
         address indexed to
     );
 
-    // 상태 조회 함수
-    function _ticketSelled(uint256 _tokenId) external view returns (bool);
-
     function _whiteList(address) external view returns (bool);
 
-    function ownerOf(uint256 _tokenId) external view returns (address);
-
     // 티켓 발행 함수
-    function mintTicket(
-        address _to,
+    function buyTicket(
         string calldata _tokenURI
-    ) external returns (uint256);
+    ) external payable returns (uint256);
 
     // 티켓 전송 함수
     function transferTicket(uint256 _tokenId, address _buyer) external;
 
     // WhiteList 업데이트 함수
     function updateWhiteList(address to) external returns (bool);
+
+    function withdraw(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external payable returns (bool);
+
+    function _mintTicket(address _to) internal virtual returns (uint256)
 }

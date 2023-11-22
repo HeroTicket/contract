@@ -30,13 +30,12 @@ contract Ticket is ERC721, Ownable {
     ITicketExtended private _ticketExtended;
 
     constructor(
-        address _ticketExtededAddress,
+        address _ticketExtendedAddress,
         address _tokenAddress,
         string memory ticketName,
         string memory ticketSymbol,
         string memory ticketUri,
         address initialOwner, // 관리자
-        // 티켓 발행자 주소
         uint256 ticketAmount,
         uint256 ticketPrice
     ) ERC721(ticketName, ticketSymbol) Ownable(initialOwner) {
@@ -49,15 +48,14 @@ contract Ticket is ERC721, Ownable {
     // WhiteList(신원 인증완료된 사람)
     mapping(address => bool) public _whiteList;
 
-    // Ticket mint
     // function mintTicket(
     //     address _to,
     //     string calldata _tokenURI
-    // ) public onlyOwner payable returns (uint256) {
+    // ) public payable onlyOwner returns (uint256) {
     //     require(remainTicketAmount > 0, "No more ticket");
     //     require(_whiteList[_to], "recipient is not in white list");
 
-    //     address tbaAddress = _ticketExtended.TBAAddress가져오기(_to);
+    //     address tbaAddress = _ticketExtended._tbaAddress[_to];
 
     //     requre(!tbaAddress != address(0x00), "");
 
@@ -72,7 +70,7 @@ contract Ticket is ERC721, Ownable {
 
     function buyTicket(
         string calldata _tokenURI
-    ) public payable onlyOwner returns (uint256) {
+    ) external payable returns (uint256) {
         require(remainTicketAmount > 0, "No more ticket");
         require(_whiteList[msg.sender], "recipient is not in white list");
 
