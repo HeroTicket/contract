@@ -1,8 +1,3 @@
-y.sol";
-확장
-TicketExtended.sol
-3KB
-﻿
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -15,10 +10,7 @@ import "./interfaces/ITicketExtended.sol";
 
 // error 정의
 
-contract TicketExtended is
-    Ownable(msg.sender),
-    ITicketExtended
-{
+contract TicketExtended is Ownable(msg.sender), ITicketExtended {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -35,7 +27,8 @@ contract TicketExtended is
 
     // tbaAddress mapping 추가
     mapping(address => address) public _tbaAddress;
-    // 티켓 주소 배열
+    // 티켓 주소 배열(컨트랙트 주소 => 티켓 주소 배열)
+    mapping(address => address[]) public _ticketAddresses;
 
     event minted(uint256 tokenId);
 
@@ -74,14 +67,6 @@ contract TicketExtended is
         emit minted(tokenId);
         return (newNFTId, accountAddress);
     }
-
-    // function executeCall(
-    //     address ticketContractAddress,
-    //     uint256 tokenId,
-    //     address to
-    // ) external payable {
-    //     _account.execute(ticketContractAddress, tokenId, to);
-    // }
 
     // 티켓 발행 함수
     function issueTicket() {}
