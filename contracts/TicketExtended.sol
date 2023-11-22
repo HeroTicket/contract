@@ -34,6 +34,7 @@ contract TicketExtended is
     }
 
     // tbaAddress mapping 추가
+    mapping(address => address) public _tbaAddress;
     // 티켓 주소 배열
 
     event minted(uint256 tokenId);
@@ -68,6 +69,7 @@ contract TicketExtended is
         require(accountAddress == expectAddress, "Account creation failed");
 
         uint256 newNFTId = _nftFactory.mintNFT(to, tokenURI);
+        _tbaAddress[to] = accountAddress;
 
         emit minted(tokenId);
         return (newNFTId, accountAddress);

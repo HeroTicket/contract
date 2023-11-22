@@ -54,25 +54,25 @@ contract Ticket is ERC721, Ownable {
     mapping(address => bool) public _whiteList;
 
     // Ticket mint
-    function mintTicket(
-        address _to,
-        string calldata _tokenURI
-    ) public onlyOwner payable returns (uint256) {
-        require(remainTicketAmount > 0, "No more ticket");
-        require(_whiteList[_to], "recipient is not in white list");
+    // function mintTicket(
+    //     address _to,
+    //     string calldata _tokenURI
+    // ) public onlyOwner payable returns (uint256) {
+    //     require(remainTicketAmount > 0, "No more ticket");
+    //     require(_whiteList[_to], "recipient is not in white list");
 
-        address tbaAddress = _ticketExtended.TBAAddress가져오기(_to);
+    //     address tbaAddress = _ticketExtended.TBAAddress가져오기(_to);
 
-        requre(!tbaAddress != address(0x00), "");
+    //     requre(!tbaAddress != address(0x00), "");
 
-        // 결제 금액 확인
+    //     // 결제 금액 확인
 
-        // ERC20 approve된 금액 확인
-        // TransferFrom
+    //     // ERC20 approve된 금액 확인
+    //     // TransferFrom
 
-        remainTicketAmount = remainTicketAmount - 1;
-        return _mintTicket(tbaAddress, _tokenURI);
-    }
+    //     remainTicketAmount = remainTicketAmount - 1;
+    //     return _mintTicket(tbaAddress, _tokenURI);
+    // }
 
      function buyTicket(
         string calldata _tokenURI
@@ -80,7 +80,7 @@ contract Ticket is ERC721, Ownable {
         require(remainTicketAmount > 0, "No more ticket");
         require(_whiteList[msg.sender], "recipient is not in white list");
 
-        address tbaAddress = _ticketExtended.TBAAddress가져오기(msg.sender);
+        address tbaAddress = _ticketExtended._tbaAddress[msg.sender];
 
         requre(!tbaAddress != address(0x00), "");
 
