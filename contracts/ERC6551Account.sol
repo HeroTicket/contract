@@ -9,7 +9,7 @@ import "./interfaces/IERC6551Account.sol";
 import "./interfaces/IERC6551Executable.sol";
 import "./interfaces/ITicket.sol";
 
-contract ERC6551Account is IERC1271, IERC6551Account {
+contract ERC6551Account is IERC1271, IERC6551Account, IERC6551Executable {
     uint256 public state;
 
     // 외부 계정으로부터 이더를 받을 수 있게하는 fallback 함수
@@ -19,22 +19,24 @@ contract ERC6551Account is IERC1271, IERC6551Account {
 
     // excutecall(transfer)
     function execute(
-        address ticketContractAddress,
-        uint256 tokenId,
-        address to
-    ) external returns (bytes4) {
-        require(msg.sender == owner(), "Not token owner");
+        address to,
+        uint256 value,
+        bytes calldata data,
+        uint8 operation
+    ) external payable virtual returns (bytes memory result) {
+        require(_isValidSigner(msg.sender), "Invalid signer");
+        require(operation == 0, "Only call operations are supported");
 
         ++state;
 
-        // parameter로 받은 ticketContractAddress를 가지고 ticketContract 생성
-        ITicket ticketContract = ITicket(ticketContractAddress);
+        bool success;
+        (success, result) = to.call{value: value}(data);
 
-        // TicketContract안에 있는 transfer 함수 실행
-        ticketContract.transferTicket(tokenId, to);
-
-        emit TransferExecuted(tokenId, to);
-        return bytes4(0x00);
+        if (!success) {
+            assembly {
+                revert(add(result, 32), mload(result))
+            }
+        }
     }
 
     function isValidSigner(

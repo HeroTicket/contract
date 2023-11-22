@@ -1,10 +1,14 @@
+y.sol";
+확장
+TicketExtended.sol
+3KB
+﻿
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "./ERC6551Account.sol";
 import "./ERC6551Registry.sol";
 import "./NFTFactory.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/ITicketExtended.sol";
@@ -12,7 +16,6 @@ import "./interfaces/ITicketExtended.sol";
 // error 정의
 
 contract TicketExtended is
-    ERC721URIStorage,
     Ownable(msg.sender),
     ITicketExtended
 {
@@ -22,12 +25,16 @@ contract TicketExtended is
     ERC6551Registry private _registry;
     ERC6551Account private _account;
     NFTFactory private _nftFactory;
+    ERC20 private _heroToken;
 
-    constructor() ERC721("Hero Ticket", "HT") {
+    constructor() {
         _nftFactory = new NFTFactory();
         _account = new ERC6551Account();
         _registry = new ERC6551Registry();
     }
+
+    // tbaAddress mapping 추가
+    // 티켓 주소 배열
 
     event minted(uint256 tokenId);
 
@@ -66,17 +73,16 @@ contract TicketExtended is
         return (newNFTId, accountAddress);
     }
 
-    function executeCall(
-        address ticketContractAddress,
-        uint256 tokenId,
-        address to
-    ) external payable {
-        _account.execute(ticketContractAddress, tokenId, to);
-    }
+    // function executeCall(
+    //     address ticketContractAddress,
+    //     uint256 tokenId,
+    //     address to
+    // ) external payable {
+    //     _account.execute(ticketContractAddress, tokenId, to);
+    // }
 
-    function getNonce() public view returns (uint256) {
-        return _nftFactory.getTransactionCount(msg.sender);
-    }
+    // 티켓 발행 함수
+    function issueTicket() {}
 
     function generateRandomSalt() internal view returns (uint256) {
         bytes32 hash = keccak256(
