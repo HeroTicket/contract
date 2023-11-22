@@ -58,6 +58,7 @@ contract Ticket is ERC721, Ownable {
         address _to,
         string calldata _tokenURI
     ) public onlyOwner payable returns (uint256) {
+        require(remainTicketAmount > 0, "No more ticket");
         require(_whiteList[_to], "recipient is not in white list");
 
         address tbaAddress = _ticketExtended.TBAAddress가져오기(_to);
@@ -69,12 +70,14 @@ contract Ticket is ERC721, Ownable {
         // ERC20 approve된 금액 확인
         // TransferFrom
 
+        remainTicketAmount = remainTicketAmount - 1;
         return _mintTicket(tbaAddress, _tokenURI);
     }
 
      function buyTicket(
         string calldata _tokenURI
     ) public onlyOwner payable returns (uint256) {
+        require(remainTicketAmount > 0, "No more ticket");
         require(_whiteList[msg.sender], "recipient is not in white list");
 
         address tbaAddress = _ticketExtended.TBAAddress가져오기(msg.sender);
@@ -87,6 +90,7 @@ contract Ticket is ERC721, Ownable {
             revert(msg.sender, adminAddress, ticketPrice);
         }
 
+        remainTicketAmount = remainTicketAmount - 1;
         return _mintTicket(tbaAddress, _tokenURI);
     }
 
