@@ -19,4 +19,8 @@ interface ITicketExtended {
         uint256 ticketAmount,
         uint256 ticketPrice
     ) external returns (address);
+
+    function buyTicket(
+        address ticketAddress
+    ) external payable returns (uint256);
 }

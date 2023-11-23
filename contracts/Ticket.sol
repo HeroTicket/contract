@@ -84,7 +84,11 @@ contract Ticket is ERC721, Ownable {
             revert(msg.sender, adminAddress, ticketPrice);
         }
 
+        // 티켓 수량 감소
         remainTicketAmount = remainTicketAmount - 1;
+
+        // ticketExtended에 _ticketAddresses[tbaAddress]에 구매할 티켓 컨트랙트 주소 추가
+        _ticketExtended._ticketAddresses[tbaAddress].push(address(this));
         return _mintTicket(tbaAddress, _tokenURI);
     }
 

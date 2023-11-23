@@ -7,6 +7,7 @@ import "./NFTFactory.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/ITicketExtended.sol";
+import "./interfaces/ITicket.sol";
 
 // error 정의
 
@@ -27,7 +28,7 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
 
     // tbaAddress mapping 추가
     mapping(address => address) public _tbaAddress;
-    // 티켓 주소 배열(컨트랙트 주소 => 티켓 주소 배열)
+    // 티켓 주소 배열(소유자 주소 => 보유중인 티켓 컨트랙트 주소 배열)
     mapping(address => address[]) public _ticketAddresses;
 
     event minted(uint256 tokenId);
@@ -91,6 +92,14 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
         );
         address ticketAddress = address(_ticket);
         return ticketAddress;
+    }
+
+    function buyTicket(
+        address ticketAddress
+    ) external payable returns (uint256) {
+        _ticket = ITicket(ticketAddress);
+        require(_whiteList[msg.sender], "recipient is not in white list");
+        return _ticket.buyTicket(msg.sender);
     }
 
     function generateRandomSalt() internal view returns (uint256) {
