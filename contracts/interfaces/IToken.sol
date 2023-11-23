@@ -31,15 +31,4 @@ interface IHeroTicketToken is IERC20 {
         address recipient,
         uint256 amount
     ) external returns (bool);
-
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
-    event Transfer(
-        address indexed sender,
-        address indexed recipient,
-        uint256 value
-    );
 }

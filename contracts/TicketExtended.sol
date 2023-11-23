@@ -5,7 +5,7 @@ import "./ERC6551Account.sol";
 import "./ERC6551Registry.sol";
 import "./NFTFactory.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Ticket.sol";
 import "./interfaces/ITicketExtended.sol";
 import "./interfaces/ITicket.sol";
 
@@ -18,7 +18,7 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
     ERC6551Registry private _registry;
     ERC6551Account private _account;
     NFTFactory private _nftFactory;
-    ERC20 private _heroToken;
+    Token private _heroToken;
 
     constructor() {
         _nftFactory = new NFTFactory();

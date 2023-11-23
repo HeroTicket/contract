@@ -35,6 +35,4 @@ interface ITicket {
         address recipient,
         uint256 amount
     ) external payable returns (bool);
-
-    function _mintTicket(address _to) internal virtual returns (uint256)
 }

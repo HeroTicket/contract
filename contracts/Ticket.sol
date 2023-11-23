@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/utils/Counters.sol"; // Counters 추가
 import "./ERC6551Account.sol";
 import "./interfaces/ITicketExtended.sol";
 import "./interfaces/ITicket.sol";
+import "./interfaces/IToken.sol";
 
 error NonexistentToken(uint256 _tokenId);
 error NotOwner(uint256 _tokenId, address sender);
@@ -19,15 +20,17 @@ error InSufficientBalance(
 );
 error PaymentFailed(address _sender, address _recipient, uint256 _amount);
 
-// 보안 강화?
-
-contract Ticket is ERC721, Ownable {
+contract Ticket is ERC721, Ownable, ITicket, ERC721URIStorage {
     using Counters for Counters.Counter; // Counters 사용
     Counters.Counter private _tokenIds; // _tokenIds를 Counters.Counter로 변경
 
     ERC6551Account private _ercAccount;
 
     ITicketExtended private _ticketExtended;
+
+    uint256 remainTicketAmount;
+
+    address adminAddress;
 
     constructor(
         address _ticketExtendedAddress,
@@ -41,8 +44,8 @@ contract Ticket is ERC721, Ownable {
     ) ERC721(ticketName, ticketSymbol) Ownable(initialOwner) {
         _ticketExtended = ITicketExtended(_ticketExtededAddress);
         _token = IToken(_tokenAddress);
-        uint256 remainTicketAmount = ticketAmount;
-        address adminAddress = initialOwner;
+        remainTicketAmount = ticketAmount;
+        adminAddress = initialOwner;
     }
 
     // WhiteList(신원 인증완료된 사람)
@@ -76,7 +79,7 @@ contract Ticket is ERC721, Ownable {
 
         address tbaAddress = _ticketExtended._tbaAddress[msg.sender];
 
-        requre(!tbaAddress != address(0x00), "");
+        require(!tbaAddress != address(0x00), "");
 
         // 티켓결제
         bool result = withdraw(msg.sender, adminAddress, ticketPrice);
@@ -117,7 +120,7 @@ contract Ticket is ERC721, Ownable {
         address sender,
         address recipient,
         uint256 amount
-    ) external payable returns (bool) {
+    ) internal payable returns (bool) {
         require(_whiteList[sender], "Not White List Member");
         require(recipient == adminAddress, "recipient is not admin");
 
@@ -141,6 +144,7 @@ contract Ticket is ERC721, Ownable {
         uint256 newTicketId = _tokenIds.current();
         _tokenIds.increment();
         _mint(_to, newTicketId);
+        _setTokenURI(newTicketId, _tokenURI);
         return newTicketId;
     }
 }
