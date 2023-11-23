@@ -29,10 +29,4 @@ interface ITicket {
 
     // WhiteList 업데이트 함수
     function updateWhiteList(address to) external returns (bool);
-
-    function withdraw(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external payable returns (bool);
 }
