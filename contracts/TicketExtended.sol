@@ -5,9 +5,9 @@ import "./ERC6551Account.sol";
 import "./ERC6551Registry.sol";
 import "./NFTFactory.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./Ticket.sol";
-import "./interfaces/ITicketExtended.sol";
 import "./interfaces/ITicket.sol";
+import "./interfaces/ITicketExtended.sol";
+import "./Ticket.sol";
 
 // error 정의
 
@@ -18,7 +18,7 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
     ERC6551Registry private _registry;
     ERC6551Account private _account;
     NFTFactory private _nftFactory;
-    Token private _heroToken;
+    Ticket private _ticket;
 
     constructor() {
         _nftFactory = new NFTFactory();
@@ -38,6 +38,9 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
         address to,
         string memory tokenURI
     ) external payable returns (uint256, address) {
+        if (_tbaAddress[to] != address(0x00)) {
+            revert("TBA is already exist");
+        }
         uint256 tokenId = _tokenIds.current();
         _tokenIds.increment();
 
@@ -69,7 +72,14 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
         return (newNFTId, accountAddress);
     }
 
-    // 티켓 발행 함수 티켓 컨트랙트를 발행해서 티켓을 만든다는 것인지 아니면 이벤트에 대한 하나의 티켓을 발행한다는 것인지?
+    function updateTicketAddresses(
+        address buyer,
+        address newTicketAddress
+    ) external {
+        _ticketAddresses[buyer].push(newTicketAddress);
+    }
+
+    // emit event
     function issueTicket(
         address _ticketExtendedAddress,
         address _tokenAddress,
@@ -94,17 +104,32 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
         return ticketAddress;
     }
 
+    // emit event
     function buyTicket(
-        address ticketAddress
+        address _ticketAddress
     ) external payable returns (uint256) {
-        _ticket = ITicket(ticketAddress);
-        require(_whiteList[msg.sender], "recipient is not in white list");
-        return _ticket.buyTicket(msg.sender);
+        _ticket = Ticket(_ticketAddress);
+        require(
+            _ticket._whiteList(msg.sender),
+            "recipient is not in white list"
+        );
+        uint256 newTicketId = _ticket.buyTicket(msg.sender);
+        return newTicketId;
+    }
+
+    function updateWhiteList(address _ticketAddress, address to) external {
+        _ticket = Ticket(_ticketAddress);
+        _ticket.updateWhiteList(to);
+    }
+
+    // ownTicket
+    function ownedTicket() external view returns (address[] memory) {
+        return _ticketAddresses[msg.sender];
     }
 
     function generateRandomSalt() internal view returns (uint256) {
         bytes32 hash = keccak256(
-            abi.encodePacked(block.timestamp, msg.sender, getNonce())
+            abi.encodePacked(block.timestamp, msg.sender, _tokenIds.current())
         );
         return uint256(hash);
     }

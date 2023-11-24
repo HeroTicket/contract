@@ -8,7 +8,7 @@ error FromZeroAddress();
 error ToZeroAddress();
 error ExceedsBalance(uint256 amount, uint256 senderBalance);
 
-contract HeroTicketToken is IERC20 {
+contract HeroToken is IERC20 {
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) public _allowances;
 
@@ -81,8 +81,8 @@ contract HeroTicketToken is IERC20 {
         uint256 amount
     ) external virtual returns (bool) {
         uint256 currentAllowance = _allowances[sender][recipient];
-        if (amount > currentAllowance) revert ExceedsAllowance(amount);
-        _approve(sender, recipient, currentAllowance - amount, false);
+        if (amount > currentAllowance)
+            _approve(sender, recipient, amount - currentAllowance, false);
         _transfer(sender, recipient, amount);
         return true;
     }

@@ -20,13 +20,15 @@ interface ITicket {
     function _whiteList(address) external view returns (bool);
 
     // 티켓 발행 함수
-    function buyTicket(
-        string calldata _tokenURI
-    ) external payable returns (uint256);
+    function buyTicket(address buyer) external payable returns (uint256);
 
     // 티켓 전송 함수
     function transferTicket(uint256 _tokenId, address _buyer) external;
 
     // WhiteList 업데이트 함수
     function updateWhiteList(address to) external returns (bool);
+
+    function isAddressInWhiteList(
+        address recipient
+    ) external view returns (bool);
 }
