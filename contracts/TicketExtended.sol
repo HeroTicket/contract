@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 import "./ERC6551Account.sol";
 import "./ERC6551Registry.sol";
 import "./NFTFactory.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/ITicket.sol";
 import "./interfaces/ITicketExtended.sol";
 import "./Ticket.sol";
@@ -12,8 +11,7 @@ import "./Ticket.sol";
 // error 정의
 
 contract TicketExtended is Ownable(msg.sender), ITicketExtended {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    uint256 private _tokenIds;
 
     ERC6551Registry private _registry;
     ERC6551Account private _account;
@@ -41,8 +39,8 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
         if (_tbaAddress[to] != address(0x00)) {
             revert("TBA is already exist");
         }
-        uint256 tokenId = _tokenIds.current();
-        _tokenIds.increment();
+        uint256 tokenId = _tokenIds;
+        _tokenIds += 1;
 
         uint256 salt = generateRandomSalt();
 
@@ -129,7 +127,7 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
 
     function generateRandomSalt() internal view returns (uint256) {
         bytes32 hash = keccak256(
-            abi.encodePacked(block.timestamp, msg.sender, _tokenIds.current())
+            abi.encodePacked(block.timestamp, msg.sender, _tokenIds)
         );
         return uint256(hash);
     }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
 
 // ERC721URIStorage는 이미 ERC721 인터페이스를 상속하므로 별도로 상속할 필요 없음.
 // Ownable은 이미 ERC721 상속 중에 상속되었으므로 별도로 상속할 필요 없음.

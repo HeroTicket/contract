@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 /// @dev the ERC-165 identifier for this interface is `0x74420f4c`
 interface IERC6551Executable {
@@ -8,5 +8,5 @@ interface IERC6551Executable {
         uint256 value,
         bytes calldata data,
         uint8 operation
-    ) external payable virtual returns (bytes memory result);
+    ) external payable returns (bytes memory result);
 }

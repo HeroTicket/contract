@@ -1,3 +1,13 @@
+# node dependencies
 node_modules
-.env
 package-lock.json
+
+# local env files
+.env
+
+# artifacts
+artifacts
+cache
+
+# vscode
+.vscode
