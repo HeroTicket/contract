@@ -11,3 +11,15 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.js
 ```
+
+## Compile contracts using solc
+
+```bash
+solc @openzeppelin/=$(pwd)/node_modules/@openzeppelin/ --abi contracts/Ticket.sol -o build
+```
+
+### Overwrite abi (if already exists)
+
+```bash
+solc @openzeppelin/=$(pwd)/node_modules/@openzeppelin/ --abi contracts/Ticket.sol -o build --overwrite
+```

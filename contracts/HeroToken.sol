@@ -12,10 +12,12 @@ contract HeroToken is IERC20 {
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) public _allowances;
 
-    uint256 public _totalSupply;
-    string public _name;
-    string public _symbol;
-    uint8 public _decimals;
+    // IERC20의 getter 함수들을 상속받아서 구현하므로 public으로 선언하면 getter 함수가 중복되어서 오류가 발생할 수 있음.
+    // 따라서 getter 함수들은 external로 선언하고, 내부에서 사용하는 변수들은 private으로 선언.
+    uint256 private _totalSupply;
+    string private _name;
+    string private _symbol;
+    uint8 private _decimals;
 
     constructor(string memory getName, string memory getSymbol) {
         _name = getName;
