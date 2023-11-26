@@ -76,6 +76,7 @@ contract Ticket is Ownable, ITicket, ERC721URIStorage {
         // ticketExtended에 _ticketAddresses[tbaAddress]에 구매할 티켓 컨트랙트 주소 추가
         _ticketExtended.updateTicketAddresses(buyer, address(this));
         uint256 newTicketId = _mintTicket(tbaAddress, baseTokenURI);
+        emit TicketBuy(buyer, newTicketId, baseTokenURI);
         return newTicketId;
     }
 
@@ -88,6 +89,7 @@ contract Ticket is Ownable, ITicket, ERC721URIStorage {
         require(_whiteList[msg.sender], "Not White List Member");
 
         safeTransferFrom(msg.sender, _buyer, _tokenId);
+        emit TicketTransferred(_tokenId, msg.sender, _buyer);
     }
 
     function updateWhiteList(address to) public returns (bool) {
@@ -95,6 +97,7 @@ contract Ticket is Ownable, ITicket, ERC721URIStorage {
             return false;
         } else {
             _whiteList[to] = true;
+            emit WhiteListUpdated(to);
             return true;
         }
     }

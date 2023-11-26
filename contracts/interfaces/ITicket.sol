@@ -6,7 +6,7 @@ pragma solidity ^0.8.13;
 
 interface ITicket {
     // 이벤트
-    event TicketMinted(
+    event TicketBuy(
         address indexed to,
         uint256 indexed tokenId,
         string tokenURI
@@ -16,6 +16,8 @@ interface ITicket {
         address indexed from,
         address indexed to
     );
+
+    event WhiteListUpdated(address indexed to);
 
     function _whiteList(address) external view returns (bool);
 

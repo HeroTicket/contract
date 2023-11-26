@@ -2,6 +2,8 @@
 pragma solidity ^0.8.0;
 
 interface ITicketExtended {
+    event minted(uint256 tokenId);
+
     function mint(
         address to,
         string memory tokenURI

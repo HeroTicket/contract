@@ -31,8 +31,6 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
     // 티켓 주소 배열(소유자 주소 => 보유중인 티켓 컨트랙트 주소 배열)
     mapping(address => address[]) public _ticketAddresses;
 
-    event minted(uint256 tokenId);
-
     // NFT Factory로 부터 Hero Ticket NFT 생성 및 TBA 생성
     function mint(
         address to,
