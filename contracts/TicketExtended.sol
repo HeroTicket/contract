@@ -7,6 +7,7 @@ import "./NFTFactory.sol";
 import "./interfaces/ITicket.sol";
 import "./interfaces/ITicketExtended.sol";
 import "./Ticket.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 // error 정의
 
@@ -16,18 +17,19 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
     ERC6551Registry private _registry;
     ERC6551Account private _account;
     NFTFactory private _nftFactory;
-    Ticket private _ticket;
+
+    // tbaAddress mapping 추가
+    mapping(address => address) public _tbaAddress;
+    // 티켓 주소 배열(소유자 주소 => 보유중인 티켓 컨트랙트 주소 배열)
+    mapping(address => address[]) public _ticketAddresses;
+
+    address[] public _tickets;
 
     constructor() {
         _nftFactory = new NFTFactory();
         _account = new ERC6551Account();
         _registry = new ERC6551Registry();
     }
-
-    // tbaAddress mapping 추가
-    mapping(address => address) public _tbaAddress;
-    // 티켓 주소 배열(소유자 주소 => 보유중인 티켓 컨트랙트 주소 배열)
-    mapping(address => address[]) public _ticketAddresses;
 
     // NFT Factory로 부터 Hero Ticket NFT 생성 및 TBA 생성
     function mint(
@@ -77,7 +79,6 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
 
     // emit event
     function issueTicket(
-        address _ticketExtendedAddress,
         address _tokenAddress,
         string memory ticketName,
         string memory ticketSymbol,
@@ -85,9 +86,9 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
         address initialOwner, // 관리자
         uint256 ticketAmount,
         uint256 ticketPrice
-    ) external onlyOwner returns (address) {
-        _ticket = new Ticket(
-            _ticketExtendedAddress,
+    ) external returns (address) {
+        Ticket _ticket = new Ticket(
+            address(this),
             _tokenAddress,
             ticketName,
             ticketSymbol,
@@ -96,15 +97,38 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
             ticketAmount,
             ticketPrice
         );
+
+        _tickets.push(address(_ticket));
         address ticketAddress = address(_ticket);
         return ticketAddress;
+    }
+
+    // ether로 티켓 구매
+    function buyTicketByEther(
+        address _ticketAddress,
+        address adminAddress,
+        uint256 ticketPrice
+    ) external payable returns (uint256) {
+        Ticket _ticket = Ticket(_ticketAddress);
+        require(
+            _ticket._whiteList(msg.sender),
+            "recipient is not in white list"
+        );
+
+        bool success = sendEther(payable(adminAddress), ticketPrice);
+
+        require(success, "Ether transfer failed.");
+
+        uint256 newTicketId = _ticket.buyTicket(msg.sender);
+
+        return newTicketId;
     }
 
     // emit event
     function buyTicket(
         address _ticketAddress
     ) external payable returns (uint256) {
-        _ticket = Ticket(_ticketAddress);
+        Ticket _ticket = Ticket(_ticketAddress);
         require(
             _ticket._whiteList(msg.sender),
             "recipient is not in white list"
@@ -113,8 +137,11 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
         return newTicketId;
     }
 
-    function updateWhiteList(address _ticketAddress, address to) external {
-        _ticket = Ticket(_ticketAddress);
+    function updateWhiteList(
+        address _ticketAddress,
+        address to
+    ) external onlyOwner {
+        Ticket _ticket = Ticket(_ticketAddress);
         _ticket.updateWhiteList(to);
     }
 
@@ -128,5 +155,17 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
             abi.encodePacked(block.timestamp, msg.sender, _tokenIds)
         );
         return uint256(hash);
+    }
+
+    // 이더 전송을 수행하고 성공 여부를 반환하는 내부 함수
+    function sendEther(
+        address payable to,
+        uint256 amount
+    ) internal returns (bool) {
+        // 이더 전송
+        (bool success, ) = to.call{value: amount}("");
+
+        // 전송 성공 여부 반환
+        return success;
     }
 }

@@ -19,7 +19,7 @@ error InSufficientBalance(
 );
 error PaymentFailed(address _sender, address _recipient, uint256 _amount);
 
-contract Ticket is Ownable, ITicket, ERC721URIStorage {
+contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
     uint256 private _tokenIds;
 
     ERC6551Account private _ercAccount;
@@ -45,7 +45,7 @@ contract Ticket is Ownable, ITicket, ERC721URIStorage {
         address initialOwner,
         uint256 ticketAmount,
         uint256 _ticketPrice
-    ) ERC721(ticketName, ticketSymbol) Ownable(initialOwner) {
+    ) ERC721(ticketName, ticketSymbol) {
         _ticketExtended = TicketExtended(_ticketExtendedAddress);
         _token = HeroToken(_tokenAddress);
         remainTicketAmount = ticketAmount;
@@ -57,7 +57,29 @@ contract Ticket is Ownable, ITicket, ERC721URIStorage {
     // WhiteList(신원 인증완료된 사람)
     mapping(address => bool) public _whiteList;
 
-    function buyTicket(address buyer) external payable returns (uint256) {
+    // 티켓 mint(ether로 ticket구매 시 사용)
+    function mintTicket(address buyer) external onlyOwner returns (uint256) {
+        require(remainTicketAmount > 0, "No more ticket");
+        require(_whiteList[buyer], "recipient is not in white list");
+
+        address tbaAddress = _ticketExtended._tbaAddress(buyer);
+
+        require(tbaAddress != address(0x00), "");
+
+        // 티켓 수량 감소
+        remainTicketAmount = remainTicketAmount - 1;
+
+        // ticketExtended에 _ticketAddresses[tbaAddress]에 구매할 티켓 컨트랙트 주소 추가
+        _ticketExtended.updateTicketAddresses(buyer, address(this));
+        uint256 newTicketId = _mintTicket(tbaAddress, baseTokenURI);
+        emit TicketBuy(buyer, newTicketId, baseTokenURI);
+        return newTicketId;
+    }
+
+    // token으로 티켓구매
+    function buyTicket(
+        address buyer
+    ) external payable onlyOwner returns (uint256) {
         require(remainTicketAmount > 0, "No more ticket");
         require(_whiteList[buyer], "recipient is not in white list");
 
@@ -90,7 +112,7 @@ contract Ticket is Ownable, ITicket, ERC721URIStorage {
         emit TicketTransferred(_tokenId, msg.sender, _buyer);
     }
 
-    function updateWhiteList(address to) public returns (bool) {
+    function updateWhiteList(address to) external returns (bool) {
         if (_whiteList[to] == true) {
             return false;
         } else {

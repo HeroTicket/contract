@@ -10,7 +10,6 @@ interface ITicketExtended {
     ) external payable returns (uint256, address);
 
     function issueTicket(
-        address _ticketExtendedAddress,
         address _tokenAddress,
         string memory ticketName,
         string memory ticketSymbol,
@@ -19,6 +18,12 @@ interface ITicketExtended {
         uint256 ticketAmount,
         uint256 ticketPrice
     ) external returns (address);
+
+    function buyTicketByEther(
+        address _ticketAddress,
+        address adminAddress,
+        uint256 ticketPrice
+    ) external payable returns (uint256);
 
     function buyTicket(
         address ticketAddress
