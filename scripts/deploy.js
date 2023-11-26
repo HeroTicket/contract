@@ -3,15 +3,18 @@ async function main() {
   console.log('Deploying contracts with the account:', deployer.address);
 
   // Step 1: Import necessary modules and contracts
-  const Ticket = await ethers.getContractFactory('Ticket');
+  const Token = await ethers.getContractFactory('HeroToken');
   const TicketExtended = await ethers.getContractFactory('TicketExtended');
 
   // Step 2: Fetch contract source code
-  const TicketContract = await Ticket.deploy('Clean Mile DNFT', 'CMD');
+  const TokenContract = await Token.deploy('HeroToken', 'HT');
   const TicketExtendedContract = await TicketExtended.deploy();
 
-  console.log('Ticket contract address:', TicketContract.target);
-  console.log('TicketExtended contract address:', TicketExtended.target);
+  console.log('Token contract address:', TokenContract.target);
+  console.log(
+    'TicketExtended contract address:',
+    TicketExtendedContract.target
+  );
 }
 // Execute the deploy function
 main()

@@ -8,5 +8,5 @@ interface IERC6551Executable {
         uint256 value,
         bytes calldata data,
         uint8 operation
-    ) external payable virtual returns (bytes memory result);
+    ) external payable returns (bytes memory result);
 }

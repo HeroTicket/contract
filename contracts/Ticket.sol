@@ -4,7 +4,6 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC6551Account.sol";
 import "./TicketExtended.sol";
 import "./HeroToken.sol";
@@ -21,8 +20,7 @@ error InSufficientBalance(
 error PaymentFailed(address _sender, address _recipient, uint256 _amount);
 
 contract Ticket is Ownable, ITicket, ERC721URIStorage {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    uint256 private _tokenIds;
 
     ERC6551Account private _ercAccount;
 
@@ -135,8 +133,8 @@ contract Ticket is Ownable, ITicket, ERC721URIStorage {
         address _to,
         string storage _tokenURI
     ) internal returns (uint256) {
-        uint256 newTicketId = _tokenIds.current();
-        _tokenIds.increment();
+        uint256 newTicketId = _tokenIds;
+        _tokenIds++;
         _mint(_to, newTicketId);
         _setTokenURI(newTicketId, _tokenURI);
         return newTicketId;
