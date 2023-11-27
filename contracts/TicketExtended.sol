@@ -106,14 +106,15 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
     // ether로 티켓 구매
     function buyTicketByEther(
         address _ticketAddress,
-        address adminAddress,
-        uint256 ticketPrice
+        address adminAddress
     ) external payable returns (uint256) {
         Ticket _ticket = Ticket(_ticketAddress);
         require(
             _ticket._whiteList(msg.sender),
             "recipient is not in white list"
         );
+
+        uint256 ticketPrice = _ticket._ticketPrice();
 
         bool success = sendEther(payable(adminAddress), ticketPrice);
 
