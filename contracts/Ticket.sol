@@ -12,7 +12,8 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
     HeroToken private _token;
 
     uint public constant MIN_TICKET_SUPPLY = 1;
-    uint public constant MIN_TICKET_PRICE = 1 gwei;
+    uint public constant MIN_TICKET_ETH_PRICE = 1 gwei;
+    uint public constant MIN_TICKET_TOKEN_PRICE = 1;
     uint public constant MIN_TICKET_SALE_DURATION = 1 days;
 
     uint256 private _tokenIds;
@@ -20,7 +21,9 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
 
     address public issuerAddress;
     uint256 public remainTicketAmount;
-    uint256 public ticketPrice;
+    uint256 public ticketEthPrice;
+    uint256 public ticketTokenPrice;
+
     uint public ticketSaleStartAt;
     uint public ticketSaleEndAt;
 
@@ -36,7 +39,8 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
         string memory ticketUri,
         address _issuerAddress,
         uint256 ticketAmount,
-        uint256 _ticketPrice,
+        uint256 _ticketEthPrice,
+        uint256 _ticketTokenPrice,
         uint ticketSaleDuration
     ) ERC721(ticketName, ticketSymbol) {
         require(
@@ -44,8 +48,12 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
             "initial ticket supply should be greater than or equal to 1"
         );
         require(
-            _ticketPrice >= MIN_TICKET_PRICE,
-            "ticket price should be greater than or equal to 1 wei"
+            _ticketEthPrice >= MIN_TICKET_ETH_PRICE,
+            "ticket eht price should be greater than or equal to 1 wei"
+        );
+        require(
+            _ticketTokenPrice >= MIN_TICKET_TOKEN_PRICE,
+            "ticket token price should be greater than or equal to 1"
         );
         require(
             ticketSaleDuration >= MIN_TICKET_SALE_DURATION,
@@ -57,7 +65,8 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
         _token = HeroToken(_tokenAddress);
         remainTicketAmount = ticketAmount;
         issuerAddress = _issuerAddress;
-        ticketPrice = _ticketPrice;
+        ticketEthPrice = _ticketEthPrice;
+        ticketTokenPrice = _ticketTokenPrice;
         baseTokenURI = ticketUri;
         ticketSaleStartAt = block.timestamp;
         ticketSaleEndAt = block.timestamp + ticketSaleDuration;
@@ -72,7 +81,7 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
         require(buyer != address(0x00), "invalid address"); // buyer 주소 검사
         require(whiteList[buyer], "recipient is not in white list"); // whiltelist 검사
         require(!hasTicket[buyer], "already has ticekt"); // 티켓 구매 여부 검사
-        require(msg.value == ticketPrice, "invalid ticket price");
+        require(msg.value == ticketEthPrice, "invalid ticket price");
 
         // 티켓 수량 감소
         remainTicketAmount -= 1;
@@ -158,17 +167,17 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
     // 토큰 결제 대금 인출하는 함수
     function withdrawToken(address sender) internal {
         uint256 senderBalance = _token.balanceOf(sender);
-        if (senderBalance < ticketPrice) {
+        if (senderBalance < ticketTokenPrice) {
             revert("Insufficient balance");
         }
 
         uint256 senderAllowance = _token.allowance(sender, address(this));
-        if (senderAllowance < ticketPrice) {
+        if (senderAllowance < ticketTokenPrice) {
             revert("Insufficient allowance");
         }
 
         // TransferFrom
-        bool ok = _token.transferFrom(sender, address(this), ticketPrice);
+        bool ok = _token.transferFrom(sender, address(this), ticketTokenPrice);
         if (!ok) {
             revert("transfer failed");
         }

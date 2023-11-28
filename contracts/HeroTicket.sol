@@ -80,7 +80,8 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         string memory ticketUri,
         address issuer,
         uint256 ticketAmount,
-        uint256 ticketPrice,
+        uint256 ticketEthPrice,
+        uint256 ticketTokenPrice,
         uint saleDuration
     ) external returns (address) {
         Ticket _ticket = new Ticket(
@@ -90,7 +91,8 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
             ticketUri,
             issuer,
             ticketAmount,
-            ticketPrice,
+            ticketEthPrice,
+            ticketTokenPrice,
             saleDuration
         );
 
@@ -107,7 +109,8 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
             ticketUri,
             issuer,
             ticketAmount,
-            ticketPrice,
+            ticketEthPrice,
+            ticketTokenPrice,
             saleDuration
         );
 
@@ -125,7 +128,7 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
 
         Ticket _ticket = Ticket(_ticketAddress);
 
-        uint256 ticketPrice = _ticket.ticketPrice();
+        uint256 ticketPrice = _ticket.ticketEthPrice();
         require(msg.value == ticketPrice, "invalid payment");
 
         uint256 newTicketId = _ticket.buyTicketByEther{value: ticketPrice}(
@@ -153,11 +156,28 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
 
         Ticket _ticket = Ticket(_ticketAddress);
 
+        uint256 ticketPrice = _ticket.ticketTokenPrice();
+
         // TODO: approve from buyer or buyerAccount
+        uint256 buyerBalance = _heroToken.balanceOf(_buyer);
+        uint256 accountBalance = _heroToken.balanceOf(buyerAccount);
 
-        uint256 newTicketId = _ticket.buyTicketByToken(tbaAddress[msg.sender]);
+        if (buyerBalance + accountBalance < ticketPrice) {
+            revert("insufficient balance to buy ticket");
+        }
 
-        emit TicketSold(_ticketAddress, msg.sender, newTicketId);
+        if (accountBalance < ticketPrice) {
+            // transfer from buyer to buyerAccount
+            uint256 shortage = ticketPrice - accountBalance;
+            _heroToken.transferFromForPayment(_buyer, buyerAccount, shortage);
+        }
+
+        // approve from account to ticket contract
+        _heroToken.approveForPayment(buyerAccount, _ticketAddress, ticketPrice);
+
+        uint256 newTicketId = _ticket.buyTicketByToken(buyerAccount);
+
+        emit TicketSold(_ticketAddress, _buyer, newTicketId);
 
         return newTicketId;
     }

@@ -16,7 +16,8 @@ interface ITicketExtended {
         string _ticketUri,
         address _initialOwner,
         uint256 _ticketAmount,
-        uint256 _ticketPrice,
+        uint256 _ticketEthPrice,
+        uint256 _ticketTokenPrice,
         uint _saleDuration
     );
 
@@ -37,7 +38,8 @@ interface ITicketExtended {
         string memory ticketUri,
         address issuer,
         uint256 ticketAmount,
-        uint256 ticketPrice,
+        uint256 ticketEthPrice,
+        uint256 ticketTokenPrice,
         uint saleDuration
     ) external returns (address);
 
