@@ -1,8 +1,25 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.19;
 
 interface ITicketExtended {
     event minted(uint256 tokenId);
+
+    event TicketCreated(
+        address indexed _ticketAddress,
+        address indexed _owner,
+        string _ticketName,
+        string _ticketSymbol,
+        string _ticketUri,
+        address _initialOwner,
+        uint256 _ticketAmount,
+        uint256 _ticketPrice
+    );
+
+    event TicketSold(
+        address indexed _ticketAddress,
+        address indexed _buyer,
+        uint256 _ticketId
+    );
 
     function mint(
         address to,
@@ -21,8 +38,7 @@ interface ITicketExtended {
 
     function buyTicketByEther(
         address _ticketAddress,
-        address adminAddress,
-        uint256 ticketPrice
+        address adminAddress
     ) external payable returns (uint256);
 
     function buyTicket(

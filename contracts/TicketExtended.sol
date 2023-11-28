@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.19;
 
 import "./ERC6551Account.sol";
 import "./ERC6551Registry.sol";
@@ -88,8 +88,23 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
         uint256 ticketPrice
     ) external returns (address) {
         Ticket _ticket = new Ticket(
-            address(this),
             _tokenAddress,
+            ticketName,
+            ticketSymbol,
+            ticketUri,
+            initialOwner, // 관리자
+            ticketAmount,
+            ticketPrice,
+            1 days // TODO: fix
+        );
+
+        address ticketAddress = address(_ticket);
+
+        _tickets.push(ticketAddress);
+
+        emit TicketCreated(
+            ticketAddress,
+            msg.sender,
             ticketName,
             ticketSymbol,
             ticketUri,
@@ -98,8 +113,6 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
             ticketPrice
         );
 
-        _tickets.push(address(_ticket));
-        address ticketAddress = address(_ticket);
         return ticketAddress;
     }
 
@@ -110,17 +123,19 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
     ) external payable returns (uint256) {
         Ticket _ticket = Ticket(_ticketAddress);
         require(
-            _ticket._whiteList(msg.sender),
+            _ticket.whiteList(msg.sender),
             "recipient is not in white list"
         );
-
-        uint256 ticketPrice = _ticket._ticketPrice();
-
+        uint256 ticketPrice = _ticket.ticketPrice();
         bool success = sendEther(payable(adminAddress), ticketPrice);
 
         require(success, "Ether transfer failed.");
 
-        uint256 newTicketId = _ticket.buyTicket(msg.sender);
+        uint256 newTicketId = _ticket.buyTicketWithEther(
+            _tbaAddress[msg.sender]
+        );
+
+        emit TicketSold(_ticketAddress, msg.sender, newTicketId);
 
         return newTicketId;
     }
@@ -131,10 +146,15 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
     ) external payable returns (uint256) {
         Ticket _ticket = Ticket(_ticketAddress);
         require(
-            _ticket._whiteList(msg.sender),
+            _ticket.whiteList(msg.sender),
             "recipient is not in white list"
         );
-        uint256 newTicketId = _ticket.buyTicket(msg.sender);
+        uint256 newTicketId = _ticket.buyTicketWithToken(
+            _tbaAddress[msg.sender]
+        );
+
+        emit TicketSold(_ticketAddress, msg.sender, newTicketId);
+
         return newTicketId;
     }
 
@@ -143,7 +163,7 @@ contract TicketExtended is Ownable(msg.sender), ITicketExtended {
         address to
     ) external onlyOwner {
         Ticket _ticket = Ticket(_ticketAddress);
-        _ticket.updateWhiteList(to);
+        _ticket.updateWhiteList(to, true);
     }
 
     // ownTicket
