@@ -135,7 +135,12 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
             tbaAddress[msg.sender]
         );
 
-        emit TicketSold(_ticketAddress, msg.sender, newTicketId);
+        emit TicketSold(
+            _ticketAddress,
+            msg.sender,
+            newTicketId,
+            TicketSaleType.ETHER
+        );
 
         return newTicketId;
     }
@@ -177,7 +182,12 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
 
         uint256 newTicketId = _ticket.buyTicketByToken(buyerAccount);
 
-        emit TicketSold(_ticketAddress, _buyer, newTicketId);
+        emit TicketSold(
+            _ticketAddress,
+            _buyer,
+            newTicketId,
+            TicketSaleType.TOKEN
+        );
 
         return newTicketId;
     }

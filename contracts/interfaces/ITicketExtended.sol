@@ -2,6 +2,11 @@
 pragma solidity ^0.8.19;
 
 interface ITicketExtended {
+    enum TicketSaleType {
+        ETHER,
+        TOKEN
+    }
+
     event TBACreated(
         address indexed owner,
         address indexed account,
@@ -24,7 +29,8 @@ interface ITicketExtended {
     event TicketSold(
         address indexed _ticketAddress,
         address indexed _buyer,
-        uint256 _ticketId
+        uint256 _ticketId,
+        TicketSaleType _saleType
     );
 
     function createTBA(
