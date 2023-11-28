@@ -1,24 +1,51 @@
-async function main() {
+const { ethers, run } = require('hardhat');
+
+const deploy = async (contractName, signer, args = []) => {
+  const factory = await ethers.getContractFactory(contractName, signer);
+  const contract = await factory.deploy(...args);
+
+  await contract.deploymentTransaction().wait();
+
+  return contract;
+}
+
+// Verify a contract
+const verify = async (address, args = []) => {
+  await run('verify:verify', {
+    address: address,
+    constructorArguments: args,
+  }).catch((error) => { console.log(error); });
+}
+
+const main = async () => {
   const [deployer] = await ethers.getSigners();
   console.log('Deploying contracts with the account:', deployer.address);
 
-  // Step 1: Import necessary modules and contracts
-  const Token = await ethers.getContractFactory('HeroToken');
-  const TicketExtended = await ethers.getContractFactory('TicketExtended');
+  const ERC6551Account = await deploy('ERC6551Account', deployer);
+  console.log('ERC6551Account contract address:', ERC6551Account.target);
 
-  // Step 2: Fetch contract source code
-  const TokenContract = await Token.deploy('HeroToken', 'HT');
-  const TicketExtendedContract = await TicketExtended.deploy();
+  const ERC6551Registry = await deploy('ERC6551Registry', deployer);
+  console.log('ERC6551Registry contract address:', ERC6551Registry.target);
 
-  console.log('Token contract address:', TokenContract.target);
-  console.log(
-    'TicketExtended contract address:',
-    TicketExtendedContract.target
-  );
+  const HeroToken = await deploy('HeroToken', deployer, ['HeroToken', 'HT']);
+  console.log('HeroToken contract address:', HeroToken.target);
+
+  const HeroTicket = await deploy('HeroTicket', deployer, [ERC6551Account.target, ERC6551Registry.target, HeroToken.target]);
+  console.log('HeroTicket contract address:', HeroTicket.target);
+
+  const tx = await HeroToken.transferOwnership(HeroTicket.target);
+  await tx.wait();
+
+  console.log("Transferred HeroToken's ownership to HeroTicket");
+
+  // Verify contracts
 }
 // Execute the deploy function
 main()
-  .then(() => process.exit(0))
+  .then(() => {
+    console.log('Deployment successful!');
+    process.exit(0);
+  })
   .catch((error) => {
     console.error(error);
     process.exit(1);
