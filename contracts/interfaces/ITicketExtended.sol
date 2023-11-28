@@ -56,5 +56,5 @@ interface ITicketExtended {
     function buyTicketByToken(
         address ticketAddress,
         address buyer
-    ) external payable returns (uint256);
+    ) external returns (uint256);
 }

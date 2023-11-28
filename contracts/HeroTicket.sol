@@ -9,6 +9,10 @@ import "./NFTFactory.sol";
 import "./HeroToken.sol";
 import "./Ticket.sol";
 
+error TBAAlreadyExists();
+error TicketNotIssuedByHeroTicket();
+error InvalidPaymentAmount();
+
 contract HeroTicket is Ownable(msg.sender), ITicketExtended {
     ERC6551Registry private _registry;
     ERC6551Account private _account;
@@ -39,10 +43,9 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
     function createTBA(
         address to,
         string memory tokenURI
-    ) external payable returns (uint256, address) {
-        if (tbaAddress[to] != address(0x00)) {
-            revert("TBA already exists");
-        }
+    ) external payable onlyOwner returns (uint256, address) {
+        if (tbaAddress[to] != address(0x00)) revert TBAAlreadyExists();
+
         uint256 tokenId = _nftFactory.mintNFT(to, tokenURI);
 
         uint256 salt = generateRandomSalt(tokenId);
@@ -83,7 +86,7 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         uint256 ticketEthPrice,
         uint256 ticketTokenPrice,
         uint saleDuration
-    ) external returns (address) {
+    ) external onlyOwner returns (address) {
         Ticket _ticket = new Ticket(
             address(_heroToken),
             ticketName,
@@ -121,15 +124,13 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
     function buyTicketByEther(
         address _ticketAddress
     ) external payable returns (uint256) {
-        require(
-            issuedTicket[_ticketAddress],
-            "ticket is not issued by this contract"
-        );
+        if (!issuedTicket[_ticketAddress]) revert TicketNotIssuedByHeroTicket();
 
         Ticket _ticket = Ticket(_ticketAddress);
 
         uint256 ticketPrice = _ticket.ticketEthPrice();
-        require(msg.value == ticketPrice, "invalid payment");
+
+        if (msg.value != ticketPrice) revert InvalidPaymentAmount();
 
         uint256 newTicketId = _ticket.buyTicketByEther{value: ticketPrice}(
             tbaAddress[msg.sender]
@@ -149,27 +150,23 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
     function buyTicketByToken(
         address _ticketAddress,
         address _buyer
-    ) external payable onlyOwner returns (uint256) {
-        require(
-            issuedTicket[_ticketAddress],
-            "ticket is not issued by this contract"
-        );
-        require(_buyer != address(0x00), "invalid buyer address");
+    ) external onlyOwner returns (uint256) {
+        if (!issuedTicket[_ticketAddress]) revert TicketNotIssuedByHeroTicket();
+        if (_buyer == address(0x00)) revert InvalidAddress();
 
         address buyerAccount = tbaAddress[_buyer];
-        require(buyerAccount != address(0x00), "invalid account address");
+        if (buyerAccount == address(0x00)) revert InvalidAddress();
 
         Ticket _ticket = Ticket(_ticketAddress);
 
         uint256 ticketPrice = _ticket.ticketTokenPrice();
 
-        // TODO: approve from buyer or buyerAccount
+        // approve from buyer or buyerAccount
         uint256 buyerBalance = _heroToken.balanceOf(_buyer);
         uint256 accountBalance = _heroToken.balanceOf(buyerAccount);
 
-        if (buyerBalance + accountBalance < ticketPrice) {
-            revert("insufficient balance to buy ticket");
-        }
+        if (buyerBalance + accountBalance < ticketPrice)
+            revert InvalidPaymentAmount();
 
         if (accountBalance < ticketPrice) {
             // transfer from buyer to buyerAccount
@@ -196,10 +193,8 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         address _ticketAddress,
         address to
     ) external onlyOwner {
-        require(
-            issuedTicket[_ticketAddress],
-            "ticket is not issued by this contract"
-        );
+        if (!issuedTicket[_ticketAddress]) revert TicketNotIssuedByHeroTicket();
+        if (to == address(0x00)) revert InvalidAddress();
 
         Ticket _ticket = Ticket(_ticketAddress);
         _ticket.updateWhiteList(to, true);
