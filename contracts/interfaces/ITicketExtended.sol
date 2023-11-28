@@ -2,9 +2,13 @@
 pragma solidity ^0.8.19;
 
 interface ITicketExtended {
-    event minted(uint256 tokenId);
+    event TBACreated(
+        address indexed owner,
+        address indexed account,
+        uint256 tokenId
+    );
 
-    event TicketCreated(
+    event TicketIssued(
         address indexed _ticketAddress,
         address indexed _owner,
         string _ticketName,
@@ -12,7 +16,8 @@ interface ITicketExtended {
         string _ticketUri,
         address _initialOwner,
         uint256 _ticketAmount,
-        uint256 _ticketPrice
+        uint256 _ticketPrice,
+        uint _saleDuration
     );
 
     event TicketSold(
@@ -21,27 +26,27 @@ interface ITicketExtended {
         uint256 _ticketId
     );
 
-    function mint(
+    function createTBA(
         address to,
         string memory tokenURI
     ) external payable returns (uint256, address);
 
     function issueTicket(
-        address _tokenAddress,
         string memory ticketName,
         string memory ticketSymbol,
         string memory ticketUri,
-        address initialOwner,
+        address issuer,
         uint256 ticketAmount,
-        uint256 ticketPrice
+        uint256 ticketPrice,
+        uint saleDuration
     ) external returns (address);
 
     function buyTicketByEther(
-        address _ticketAddress,
-        address adminAddress
+        address _ticketAddress
     ) external payable returns (uint256);
 
-    function buyTicket(
-        address ticketAddress
+    function buyTicketByToken(
+        address ticketAddress,
+        address buyer
     ) external payable returns (uint256);
 }

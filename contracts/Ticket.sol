@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "./ERC6551Account.sol";
-import "./TicketExtended.sol";
 import "./HeroToken.sol";
 import "./interfaces/ITicket.sol";
 
@@ -13,7 +12,7 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
     HeroToken private _token;
 
     uint public constant MIN_TICKET_SUPPLY = 1;
-    uint public constant MIN_TICKET_PRICE = 1 wei;
+    uint public constant MIN_TICKET_PRICE = 1 gwei;
     uint public constant MIN_TICKET_SALE_DURATION = 1 days;
 
     uint256 private _tokenIds;
@@ -65,7 +64,7 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
     }
 
     // 티켓 mint(ether로 ticket구매 시 사용)
-    function buyTicketWithEther(
+    function buyTicketByEther(
         address buyer
     ) external payable onlyOwner returns (uint256) {
         require(remainTicketAmount > 0, "No more ticket"); // 티켓 수량 검사
@@ -86,7 +85,7 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
     }
 
     // token으로 티켓구매
-    function buyTicketWithToken(
+    function buyTicketByToken(
         address buyer
     ) external onlyOwner returns (uint256) {
         require(remainTicketAmount > 0, "No more ticket"); // 티켓 수량 검사
@@ -115,7 +114,6 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
         );
 
         safeTransferFrom(msg.sender, _buyer, _tokenId);
-
         emit TicketTransferred(_tokenId, msg.sender, _buyer);
     }
 

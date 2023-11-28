@@ -38,11 +38,9 @@ interface ITicket {
     function whiteList(address) external view returns (bool);
 
     // 티켓 발행 함수
-    function buyTicketWithEther(
-        address buyer
-    ) external payable returns (uint256);
+    function buyTicketByEther(address buyer) external payable returns (uint256);
 
-    function buyTicketWithToken(address buyer) external returns (uint256);
+    function buyTicketByToken(address buyer) external returns (uint256);
 
     // 티켓 전송 함수
     function transferTicket(uint256 _tokenId, address _buyer) external;
