@@ -1,3 +1,0 @@
-await ticketExtended.mint("0x965B0E63e00E7805569ee3B428Cf96330DFc57EF","askldjklfjas")
-const ticketExtended = TicketExtended.attach("0xde39aCbDf34d3F8C2E00bB09eeEbf236AB12eF54")
-const TicketExtended = await ethers.getContractFactory("TicketExtended")
