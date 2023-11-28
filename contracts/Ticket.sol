@@ -8,6 +8,21 @@ import "./ERC6551Account.sol";
 import "./HeroToken.sol";
 import "./interfaces/ITicket.sol";
 
+error InvalidAddress();
+error InvalidTicketAmount();
+error InvalidTicketPrice();
+error InvalidTicketSaleDuration();
+error InsuffientTicketAmount();
+error TicketSalePeriodEnded();
+error NotAllowedToBuyTicket(address blockedAddress);
+error AlreadyHasTicket(address buyer);
+error InvalidEthAmount(uint256 ethAmount);
+error NotOwnerOfTicket(uint256 _tokenId, address sender);
+error SalePeriodNotEnded();
+error InvalidTokenAmount(uint256 tokenAmount);
+error InvalidTokenAllowance(uint256 tokenAllowance);
+error TransferFailed(address from, address to, uint256 amount);
+
 contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
     HeroToken private _token;
 
@@ -43,24 +58,14 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
         uint256 _ticketTokenPrice,
         uint ticketSaleDuration
     ) ERC721(ticketName, ticketSymbol) {
-        require(
-            ticketAmount >= MIN_TICKET_SUPPLY,
-            "initial ticket supply should be greater than or equal to 1"
-        );
-        require(
-            _ticketEthPrice >= MIN_TICKET_ETH_PRICE,
-            "ticket eht price should be greater than or equal to 1 wei"
-        );
-        require(
-            _ticketTokenPrice >= MIN_TICKET_TOKEN_PRICE,
-            "ticket token price should be greater than or equal to 1"
-        );
-        require(
-            ticketSaleDuration >= MIN_TICKET_SALE_DURATION,
-            "ticket sale duration should be greater than or equal to 1 day"
-        );
-        require(_tokenAddress != address(0x00), "invalid token address");
-        require(_issuerAddress != address(0x00), "invalid issuer address");
+        if (_tokenAddress == address(0x00)) revert InvalidAddress();
+        if (_issuerAddress == address(0x00)) revert InvalidAddress();
+        if (ticketAmount < MIN_TICKET_SUPPLY) revert InvalidTicketAmount();
+        if (_ticketEthPrice < MIN_TICKET_ETH_PRICE) revert InvalidTicketPrice();
+        if (_ticketTokenPrice < MIN_TICKET_TOKEN_PRICE)
+            revert InvalidTicketPrice();
+        if (ticketSaleDuration < MIN_TICKET_SALE_DURATION)
+            revert InvalidTicketSaleDuration();
 
         _token = HeroToken(_tokenAddress);
         remainTicketAmount = ticketAmount;
@@ -76,12 +81,12 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
     function buyTicketByEther(
         address buyer
     ) external payable onlyOwner returns (uint256) {
-        require(remainTicketAmount > 0, "No more ticket"); // 티켓 수량 검사
-        require(block.timestamp < ticketSaleEndAt, "ticket sales are closed"); // 티켓 판매 종료 시점 검사
-        require(buyer != address(0x00), "invalid address"); // buyer 주소 검사
-        require(whiteList[buyer], "recipient is not in white list"); // whiltelist 검사
-        require(!hasTicket[buyer], "already has ticekt"); // 티켓 구매 여부 검사
-        require(msg.value == ticketEthPrice, "invalid ticket price");
+        if (remainTicketAmount == 0) revert InsuffientTicketAmount(); // 티켓 수량 검사
+        if (block.timestamp >= ticketSaleEndAt) revert TicketSalePeriodEnded(); // 티켓 판매 종료 시점 검사
+        if (buyer == address(0x00)) revert InvalidAddress(); // buyer 주소 검사
+        if (!whiteList[buyer]) revert NotAllowedToBuyTicket(buyer); // whiltelist 검사
+        if (hasTicket[buyer]) revert AlreadyHasTicket(buyer); // 티켓 구매 여부 검사
+        if (msg.value != ticketEthPrice) revert InvalidEthAmount(msg.value); // 티켓 결제 금액 검사
 
         // 티켓 수량 감소
         remainTicketAmount -= 1;
@@ -97,10 +102,10 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
     function buyTicketByToken(
         address buyer
     ) external onlyOwner returns (uint256) {
-        require(remainTicketAmount > 0, "No more ticket"); // 티켓 수량 검사
-        require(block.timestamp < ticketSaleEndAt, "ticket sales are closed"); // 티켓 판매 종료 시점 검사
-        require(buyer != address(0x00), "invalid address"); // buyer 주소 검사
-        require(!hasTicket[buyer], "already has ticekt"); // 티켓 구매 여부 검사
+        if (remainTicketAmount == 0) revert InsuffientTicketAmount(); // 티켓 수량 검사
+        if (block.timestamp >= ticketSaleEndAt) revert TicketSalePeriodEnded(); // 티켓 판매 종료 시점 검사
+        if (buyer == address(0x00)) revert InvalidAddress(); // buyer 주소 검사
+        if (hasTicket[buyer]) revert AlreadyHasTicket(buyer); // 티켓 구매 여부 검사
 
         // 티켓결제
         withdrawToken(buyer);
@@ -117,21 +122,17 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
 
     // 구매자의 지갑(TBA)로 티켓 전송
     function transferTicket(uint256 _tokenId, address _buyer) public {
-        require(
-            ownerOf(_tokenId) == msg.sender,
-            "Not the owner of this ticket"
-        );
+        if (_buyer == address(0x00)) revert InvalidAddress(); // buyer 주소 검사
+        if (!(ownerOf(_tokenId) == msg.sender))
+            revert NotOwnerOfTicket(_tokenId, msg.sender); // 티켓 소유자 검사
 
         safeTransferFrom(msg.sender, _buyer, _tokenId);
         emit TicketTransferred(_tokenId, msg.sender, _buyer);
     }
 
     // 티켓 발행자에게 결제 대금 정산
-    function claimPayment() external {
-        require(
-            block.timestamp >= ticketSaleEndAt,
-            "ticket sale is not finished"
-        );
+    function claimSettlement() external {
+        if (block.timestamp < ticketSaleEndAt) revert SalePeriodNotEnded();
 
         // send eth
         // TODO: calculate fee
@@ -154,11 +155,13 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
         }
 
         if (ethAmount > 0 || tokenAmount > 0) {
-            emit PaymentClaimed(issuerAddress, ethAmount, tokenAmount);
+            emit SettlementClaimed(issuerAddress, ethAmount, tokenAmount);
         }
     }
 
     function updateWhiteList(address to, bool allow) external onlyOwner {
+        if (to == address(0x00)) revert InvalidAddress();
+
         whiteList[to] = allow;
 
         emit WhiteListUpdated(to, allow);
@@ -167,20 +170,16 @@ contract Ticket is Ownable(msg.sender), ITicket, ERC721URIStorage {
     // 토큰 결제 대금 인출하는 함수
     function withdrawToken(address sender) internal {
         uint256 senderBalance = _token.balanceOf(sender);
-        if (senderBalance < ticketTokenPrice) {
-            revert("Insufficient balance");
-        }
+        if (senderBalance < ticketTokenPrice)
+            revert InvalidTokenAmount(senderBalance);
 
         uint256 senderAllowance = _token.allowance(sender, address(this));
-        if (senderAllowance < ticketTokenPrice) {
-            revert("Insufficient allowance");
-        }
+        if (senderAllowance < ticketTokenPrice)
+            revert InvalidTokenAllowance(senderAllowance);
 
         // TransferFrom
         bool ok = _token.transferFrom(sender, address(this), ticketTokenPrice);
-        if (!ok) {
-            revert("transfer failed");
-        }
+        if (!ok) revert TransferFailed(sender, address(this), ticketTokenPrice);
     }
 
     function _mintTicket(
