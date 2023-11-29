@@ -33,6 +33,13 @@ interface ITicketExtended {
         TicketSaleType _saleType
     );
 
+    event TokenReward(address to, uint256 amount);
+
+    event TokenPaymentForIssueTicket(
+        address indexed _issuer,
+        uint256 _ticketTokenPrice
+    );
+
     function createTBA(
         address to,
         string memory tokenURI

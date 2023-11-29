@@ -29,4 +29,9 @@ contract HeroToken is ERC20, Ownable(msg.sender) {
         _approve(owner, spender, value, false);
         return true;
     }
+
+    function mintForPayment(uint256 amount) external onlyOwner returns (bool) {
+        _mint(msg.sender, amount);
+        return true;
+    }
 }

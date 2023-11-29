@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/reentrancy/ReentrancyGuard.sol";
 import "./interfaces/ITicketExtended.sol";
 import "./ERC6551Account.sol";
 import "./ERC6551Registry.sol";
@@ -67,7 +68,8 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
 
         tbaAddress[to] = accountAddress;
 
-        // TODO: tba로 토큰 보상 지급
+        // 토큰 보상 지급
+        _tokenReward(accountAddress, 1000);
 
         emit TBACreated(to, accountAddress, tokenId);
 
@@ -92,7 +94,8 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         uint256 ticketTokenPrice,
         uint saleDuration
     ) external onlyOwner returns (address) {
-        // TODO: issuer tba로부터 토큰 차감
+        // issuer tba로부터 토큰 차감
+        _tokenPaymentForIssueTicket(issuer, ticketTokenPrice);
 
         Ticket _ticket = new Ticket(
             address(_heroToken),
@@ -144,6 +147,9 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         );
 
         // TODO: 토큰 보상 지급
+        _tokenReward(tbaAddress[msg.sender], 1000);
+
+        _ticket._approve(to, tokenId, auth);
 
         emit TicketSold(
             _ticketAddress,
@@ -216,5 +222,31 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
             abi.encodePacked(block.timestamp, msg.sender, _tokenId)
         );
         return uint256(hash);
+    }
+
+    function _tokenReward(address to, uint256 amount) internal nonReentrant {
+        uint256 balance = _heroToken.balanceOf(address(this));
+        if (balance < amount) {
+            uint256 shortage = amount - balance;
+            _heroToken.mintForPayment(shortage);
+        }
+        _heroToken.transferFromForPayment(address(this), to, shortage);
+        emit TokenReward(to, amount);
+    }
+
+    function _tokenPaymentForIssueTicket(
+        address issuer,
+        uint256 amount
+    ) internal nonReentrant {
+        address issuerAccount = tbaAddress[issuer];
+
+        if (issuerAccount == address(0x00)) revert InvalidAddress();
+
+        bool paymentResult = _heroToken.transferFromForPayment(
+            issuerAccount,
+            address(this),
+            amount
+        );
+        emit TokenPaymentForIssueTicket(issuer, ticketTokenPrice);
     }
 }
