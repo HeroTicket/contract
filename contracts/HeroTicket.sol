@@ -28,15 +28,11 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
 
     address[] public _tickets;
 
-    constructor(
-        address payable accountImpl,
-        address registryImpl,
-        address heroToken
-    ) {
+    constructor(address payable accountImpl, address registryImpl) {
         _nftFactory = new NFTFactory();
+        _heroToken = new HeroToken("HeroToken", "HT");
         _account = ERC6551Account(accountImpl);
         _registry = ERC6551Registry(registryImpl);
-        _heroToken = HeroToken(heroToken);
     }
 
     // NFT Factory로 부터 Hero Ticket NFT 생성 및 TBA 생성
@@ -71,10 +67,19 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
 
         tbaAddress[to] = accountAddress;
 
+        // TODO: tba로 토큰 보상 지급
+
         emit TBACreated(to, accountAddress, tokenId);
 
         return (tokenId, accountAddress);
     }
+
+    // 티켓 ai 이미지 생성 함수
+    // requestId 반환
+
+    // 프론트에서 이미지가 생성이 되었는지 확인을 하고
+    // issueTicket으로 requestId를 넘겨줌
+    // issueTicket에서 requestId를 사용해서 이미지 string을 찾아서 ticketUri로 넘겨줌
 
     // emit event
     function issueTicket(
@@ -87,7 +92,7 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         uint256 ticketTokenPrice,
         uint saleDuration
     ) external onlyOwner returns (address) {
-        // TODO: issuer로부터 토큰 차감
+        // TODO: issuer tba로부터 토큰 차감
 
         Ticket _ticket = new Ticket(
             address(_heroToken),
@@ -108,7 +113,7 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
 
         emit TicketIssued(
             ticketAddress,
-            msg.sender,
+            address(this),
             ticketName,
             ticketSymbol,
             ticketUri,

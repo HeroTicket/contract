@@ -17,7 +17,6 @@
   "devDependencies": {
     "@chainlink/contracts": "^0.8.0",
     "@chainlink/functions-toolkit": "^0.2.6",
-    "@nomicfoundation/hardhat-verify": "^2.0.1",
-    "ethers": "^5.7.2"
+    "@nomicfoundation/hardhat-verify": "^2.0.1"
   }
 }

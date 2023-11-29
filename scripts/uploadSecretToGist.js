@@ -42,6 +42,8 @@ const uploadSecretToGist = async () => {
 
     console.log("Gist URL: ", gistURL);
 
+    const encryptedSecretUrls = await secretsManager.encryptSecretsUrls([gistURL]);
+
 
     const envVars = fs.readFileSync(process.cwd() + "/.env", "utf8").split(os.EOL);
 
@@ -53,6 +55,16 @@ const uploadSecretToGist = async () => {
         envVars.push(`GIST_URL=${gistURL}`);
     } else {
         envVars.splice(index, 1, `GIST_URL=${gistURL}`);
+    }
+
+    // .env 파일에서 ENCRYPTED_SECRET_URLS 찾기
+    const index2 = envVars.findIndex((line) => line.includes("ENCRYPTED_SECRET_URLS"));
+
+    // ENCRYPTED_SECRET_URLS이 없으면 추가, 있으면 덮어쓰기
+    if (index2 === -1) {
+        envVars.push(`ENCRYPTED_SECRET_URLS=${encryptedSecretUrls}`);
+    } else {
+        envVars.splice(index2, 1, `ENCRYPTED_SECRET_URLS=${encryptedSecretUrls}`);
     }
 
     // .env 파일 덮어쓰기

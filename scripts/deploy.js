@@ -27,20 +27,17 @@ const main = async () => {
   const ERC6551Registry = await deploy('ERC6551Registry', deployer);
   console.log('ERC6551Registry contract address:', ERC6551Registry.target);
 
-  const HeroToken = await deploy('HeroToken', deployer, ['HeroToken', 'HT']);
-  console.log('HeroToken contract address:', HeroToken.target);
-
-  const HeroTicket = await deploy('HeroTicket', deployer, [ERC6551Account.target, ERC6551Registry.target, HeroToken.target]);
+  const HeroTicket = await deploy('HeroTicket', deployer, [ERC6551Account.target, ERC6551Registry.target]);
   console.log('HeroTicket contract address:', HeroTicket.target);
 
-  const tx = await HeroToken.transferOwnership(HeroTicket.target);
-  await tx.wait();
+  // const tx = await HeroToken.transferOwnership(HeroTicket.target);
+  // await tx.wait();
 
-  console.log("Transferred HeroToken's ownership to HeroTicket");
+  // console.log("Transferred HeroToken's ownership to HeroTicket");
 
   // Verify contracts
 }
-// Execute the deploy function
+//Execute the deploy function
 main()
   .then(() => {
     console.log('Deployment successful!');
