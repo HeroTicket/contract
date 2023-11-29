@@ -67,6 +67,13 @@ const main = async () => {
   );
 
   console.log(tx);
+
+  // 15초 대기
+  await new Promise((resolve) => setTimeout(resolve, 15000));
+
+  const tx2 = await heroTicket.requests(tx.data);
+
+  console.log(tx2);
   // TicketImageConsumer = await ethers.getContractFactory(
   //   'TicketImageConsumer',
   //   deployer

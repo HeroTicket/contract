@@ -101,6 +101,17 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         return requestId;
     }
 
+    // requests mapping에서 requestId로 이미지 정보를 가져옴
+    function requests(
+        bytes32 requestId
+    )
+        external
+        view
+        returns (uint256, string memory, string memory, string memory, bool)
+    {
+        return _ticketImageConsumer.requests(requestId);
+    }
+
     // 프론트에서 이미지가 생성이 되었는지 확인을 하고
     // issueTicket으로 requestId를 넘겨줌
     // issueTicket에서 requestId를 사용해서 이미지 string을 찾아서 ticketUri로 넘겨줌
