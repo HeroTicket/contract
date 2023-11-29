@@ -87,6 +87,8 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         uint256 ticketTokenPrice,
         uint saleDuration
     ) external onlyOwner returns (address) {
+        // TODO: issuer로부터 토큰 차감
+
         Ticket _ticket = new Ticket(
             address(_heroToken),
             ticketName,
@@ -135,6 +137,8 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         uint256 newTicketId = _ticket.buyTicketByEther{value: ticketPrice}(
             tbaAddress[msg.sender]
         );
+
+        // TODO: 토큰 보상 지급
 
         emit TicketSold(
             _ticketAddress,
