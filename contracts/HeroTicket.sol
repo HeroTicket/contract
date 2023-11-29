@@ -9,6 +9,7 @@ import "./ERC6551Registry.sol";
 import "./NFTFactory.sol";
 import "./HeroToken.sol";
 import "./Ticket.sol";
+import "./TicketImageConsumer.sol";
 
 error TBAAlreadyExists();
 error TicketNotIssuedByHeroTicket();
@@ -19,6 +20,7 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
     ERC6551Account private _account;
     NFTFactory private _nftFactory;
     HeroToken private _heroToken;
+    TicketImageConsumer private _ticketImageConsumer;
 
     // tbaAddress mapping 추가
     mapping(address => address) public tbaAddress;
@@ -29,11 +31,16 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
 
     address[] public _tickets;
 
-    constructor(address payable accountImpl, address registryImpl) {
+    constructor(
+        address payable accountImpl,
+        address registryImpl,
+        address ticketImageConsumerImpl
+    ) {
         _nftFactory = new NFTFactory();
         _heroToken = new HeroToken("HeroToken", "HT");
         _account = ERC6551Account(accountImpl);
         _registry = ERC6551Registry(registryImpl);
+        _ticketImageConsumer = TicketImageConsumer(ticketImageConsumerImpl);
     }
 
     // NFT Factory로 부터 Hero Ticket NFT 생성 및 TBA 생성
@@ -78,6 +85,21 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
 
     // 티켓 ai 이미지 생성 함수
     // requestId 반환
+    function requestTicketImage(
+        bytes memory encryptedSecretsUrls,
+        string memory location,
+        string memory keyword
+    ) external onlyOwner returns (bytes32) {
+        bytes32 requestId = _ticketImageConsumer.requestTicketImage(
+            encryptedSecretsUrls,
+            location,
+            keyword
+        );
+
+        emit TicketImageRequestCreated(requestId, location, keyword);
+
+        return requestId;
+    }
 
     // 프론트에서 이미지가 생성이 되었는지 확인을 하고
     // issueTicket으로 requestId를 넘겨줌

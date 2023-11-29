@@ -40,6 +40,12 @@ interface ITicketExtended {
         uint256 _ticketTokenPrice
     );
 
+    event TicketImageRequestCreated(
+        bytes32 indexed requestId,
+        string location,
+        string keyword
+    );
+
     function createTBA(
         address to,
         string memory tokenURI
