@@ -16,11 +16,12 @@ const uploadSecretToGist = async () => {
     const privateKey = process.env.MUMBAI_PRIVATE_KEY;
     const rpcUrl = process.env.MUMBAI_RPC_ENDPOINT;
 
+
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const wallet = new ethers.Wallet(privateKey);
     const signer = wallet.connect(provider);
 
-    const secrets = { apiKey: process.env.OPENAI_API_KEY };
+    const secrets = { openaiApiKey: process.env.OPENAI_API_KEY, pinataJwt: process.env.PINATA_JWT };
 
     console.log("secrets: ", secrets);
 
