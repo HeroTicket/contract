@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/reentrancy/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./interfaces/ITicketExtended.sol";
 import "./ERC6551Account.sol";
 import "./ERC6551Registry.sol";
@@ -149,7 +149,7 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         // TODO: 토큰 보상 지급
         _tokenReward(tbaAddress[msg.sender], 1000);
 
-        _ticket._approve(to, tokenId, auth);
+        _ticket.approve(msg.sender, newTicketId);
 
         emit TicketSold(
             _ticketAddress,
@@ -224,29 +224,25 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         return uint256(hash);
     }
 
-    function _tokenReward(address to, uint256 amount) internal nonReentrant {
+    function _tokenReward(address to, uint256 amount) internal {
         uint256 balance = _heroToken.balanceOf(address(this));
         if (balance < amount) {
             uint256 shortage = amount - balance;
             _heroToken.mintForPayment(shortage);
         }
-        _heroToken.transferFromForPayment(address(this), to, shortage);
+        _heroToken.transferFromForPayment(address(this), to, amount);
         emit TokenReward(to, amount);
     }
 
     function _tokenPaymentForIssueTicket(
         address issuer,
         uint256 amount
-    ) internal nonReentrant {
+    ) internal {
         address issuerAccount = tbaAddress[issuer];
 
         if (issuerAccount == address(0x00)) revert InvalidAddress();
 
-        bool paymentResult = _heroToken.transferFromForPayment(
-            issuerAccount,
-            address(this),
-            amount
-        );
-        emit TokenPaymentForIssueTicket(issuer, ticketTokenPrice);
+        _heroToken.transferFromForPayment(issuerAccount, address(this), amount);
+        emit TokenPaymentForIssueTicket(issuer, amount);
     }
 }

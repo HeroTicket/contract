@@ -20,7 +20,7 @@ module.exports = {
 
   networks: {
     local: {
-      url: 'http://localhost:8545',
+      url: 'http://localhost:7545',
       accounts: [process.env.LOCAL_PRIVATE_KEY],
     },
     mumbai: {
