@@ -46,6 +46,16 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         _ticketImageConsumer = TicketImageConsumer(ticketImageConsumerImpl);
     }
 
+    function ticketsByOwner(
+        address owner
+    ) external view returns (address[] memory) {
+        return ownedTickets[owner]; // 티켓 컨트랙트 주소 배열 반환
+    }
+
+    function tokenBalanceOf(address owner) external view returns (uint256) {
+        return _heroToken.balanceOf(owner); // TBA 주소의 토큰 잔액 반환
+    }
+
     // NFT Factory로 부터 Hero Ticket NFT 생성 및 TBA 생성
     function createTBA(
         address to,
