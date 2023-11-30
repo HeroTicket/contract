@@ -56,6 +56,14 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         return _heroToken.balanceOf(owner); // TBA 주소의 토큰 잔액 반환
     }
 
+    function hasTicket(
+        address owner,
+        address ticketAddress
+    ) external view returns (bool) {
+        Ticket _ticket = Ticket(ticketAddress); // 티켓 컨트랙트 인스턴스 생성
+        return _ticket.hasTicket(owner); // 티켓 컨트랙트의 hasTicket 함수 호출
+    }
+
     // NFT Factory로 부터 Hero Ticket NFT 생성 및 TBA 생성
     function createTBA(
         address to,
@@ -179,19 +187,23 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
     ) external payable returns (uint256) {
         if (!issuedTicket[_ticketAddress]) revert TicketNotIssuedByHeroTicket(); // 티켓 컨트랙트 주소가 아닌 경우
 
+        address buyer = msg.sender; // 구매자 주소
+        if (buyer == address(0x00)) revert InvalidAddress(); // 구매자 주소가 없는 경우
+
+        address payable buyerAccount = payable(tbaAddress[buyer]); // 구매자의 TBA 주소
+        if (buyerAccount == address(0x00)) revert InvalidAddress(); // 구매자의 TBA 주소가 없는 경우
+
         Ticket _ticket = Ticket(_ticketAddress); // 티켓 컨트랙트 인스턴스 생성
 
         uint256 ticketPrice = _ticket.ticketEthPrice(); // 티켓 가격 조회
 
         if (msg.value != ticketPrice) revert InvalidPaymentAmount(); // 지불 금액이 티켓 가격과 다른 경우
 
-        address payable accountAddress = payable(tbaAddress[msg.sender]); // 구매자의 TBA 주소
-
         uint256 newTicketId = _ticket.buyTicketByEther{value: ticketPrice}(
-            accountAddress
+            buyerAccount
         ); // 티켓 구매
 
-        _tokenReward(accountAddress, 1000); // 토큰 보상 지급
+        _tokenReward(buyerAccount, 1000); // 토큰 보상 지급
 
         _ticket.approve(msg.sender, newTicketId); // ???
 
