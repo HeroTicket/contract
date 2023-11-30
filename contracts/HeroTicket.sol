@@ -137,6 +137,10 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         return (tokenId, accountAddress); // tokenId, TBA 주소 반환
     }
 
+    function acceptOwnership() external onlyOwner {
+        _ticketImageConsumer.acceptOwnership(); // ticketImageConsumer 컨트랙트의 소유권 이전
+    }
+
     // 티켓 ai 이미지 생성 함수
     // requestId 반환
     function requestTicketImage(
@@ -238,8 +242,6 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         ); // 티켓 구매
 
         _tokenReward(buyerAccount, 1000); // 토큰 보상 지급
-
-        _ticket.approve(msg.sender, newTicketId); // ???
 
         emit TicketSold(
             _ticketAddress,

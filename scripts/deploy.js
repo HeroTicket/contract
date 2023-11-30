@@ -21,15 +21,9 @@ const verify = async (address, args = []) => {
   });
 };
 
-const main = async () => {
+const deployContracts = async () => {
   const [deployer] = await ethers.getSigners();
   console.log('Deploying contracts with the account:', deployer.address);
-
-  const ERC6551Account = await deploy('ERC6551Account', deployer);
-  console.log('ERC6551Account contract address:', ERC6551Account.target);
-
-  const ERC6551Registry = await deploy('ERC6551Registry', deployer);
-  console.log('ERC6551Registry contract address:', ERC6551Registry.target);
 
   // read javascript file as string
   const source = fs.readFileSync(process.cwd() + '/api-request.js').toString();
@@ -48,8 +42,8 @@ const main = async () => {
   );
 
   let HeroTicket = await deploy('HeroTicket', deployer, [
-    ERC6551Account.target,
-    ERC6551Registry.target,
+    "0x2683f4e961890eFE9Ae514A0Fbe747C990E882E4",
+    "0x8aa31923f0A7eE8dfaDF030354f117be7B74a78d",
     TicketImageConsumer.target,
   ]);
   console.log('HeroTicket contract address:', HeroTicket.target);
@@ -58,28 +52,42 @@ const main = async () => {
 
   const transferOwnershipReceipt = await transferOwnershipTx.wait();
 
-  console.log("ownership transfered:", transferOwnershipReceipt.hash);
+  console.log("ownership transfer requested:", transferOwnershipReceipt.hash);
 
-  // HeroTicket = await ethers.getContractFactory('HeroTicket', deployer);
+  const acceptOwnershipTx = await HeroTicket.acceptOwnership();
 
-  // const heroTicket = HeroTicket.attach(
-  //   '0xE06364a013C37375ebFDDf0fb01C3262Ed385D69'
-  // );
+  const acceptOwnershipReceipt = await acceptOwnershipTx.wait();
 
-  // const tx = await heroTicket.requestTicketImage(
+  console.log("ownership transfer accepted:", acceptOwnershipReceipt.hash);
+
+  console.log("owner of TicketImageConsumer:", await TicketImageConsumer.owner());
+};
+
+const main = async () => {
+  // Deploy contracts
+  // await deployContracts();
+
+  const [deployer] = await ethers.getSigners();
+
+  const HeroTicket = await ethers.getContractFactory('HeroTicket', deployer);
+
+  const heroTicket = HeroTicket.attach("0xB97b45C18C9ac6C9a1da1e275B660B1116EE3599");
+
+  // const requestTicketImageTx = await heroTicket.requestTicketImage(
   //   process.env.ENCRYPTED_SECRET_URLS,
   //   'Seoul',
   //   'YOASOBI Concert'
   // );
 
-  // console.log(tx);
+  // const requestTicketImageReceipt = await requestTicketImageTx.wait();
 
-  // // 15초 대기
-  // await new Promise((resolve) => setTimeout(resolve, 15000));
 
-  // const tx2 = await heroTicket.requests(tx.data);
+  // console.log("requestTicketImageTxHash:", requestTicketImageReceipt.hash);
 
-  // console.log(tx2);
+
+  const requestData = await heroTicket.requests("0x6EF9D4C6513FF9362341DED59569326758ABF124703EA224E45D33F2545CFB58");
+
+  console.log("requestData:", requestData);
 
   // Verify contracts
 };
