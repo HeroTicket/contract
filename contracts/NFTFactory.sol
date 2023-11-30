@@ -22,4 +22,6 @@ contract NFTFactory is ERC721URIStorage, Ownable {
 
         return newItemId;
     }
+
+    // TODO: Make the NFT SoulBound
 }

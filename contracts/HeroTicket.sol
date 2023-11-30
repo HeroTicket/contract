@@ -183,7 +183,7 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         uint saleDuration
     ) external onlyOwner returns (address) {
         // issuer tba로부터 토큰 차감
-        _tokenPaymentForIssueTicket(issuer, ticketTokenPrice); // 토큰 차감 // TODO: 차감 금액 수정
+        _tokenPaymentForIssueTicket(issuer, 500); // 토큰 차감
 
         Ticket _ticket = new Ticket(
             address(_heroToken),
