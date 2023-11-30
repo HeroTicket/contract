@@ -54,36 +54,19 @@ const main = async () => {
   ]);
   console.log('HeroTicket contract address:', HeroTicket.target);
 
-  HeroTicket = await ethers.getContractFactory('HeroTicket', deployer);
+  const transferOwnershipTx = await TicketImageConsumer.transferOwnership(HeroTicket.target);
 
-  const heroTicket = HeroTicket.attach(
-    '0xE06364a013C37375ebFDDf0fb01C3262Ed385D69'
-  );
+  const transferOwnershipReceipt = await transferOwnershipTx.wait();
 
-  const tx = await heroTicket.requestTicketImage(
-    process.env.ENCRYPTED_SECRET_URLS,
-    'Seoul',
-    'YOASOBI Concert'
-  );
+  console.log("ownership transfered:", transferOwnershipReceipt.hash);
 
-  console.log(tx);
+  // HeroTicket = await ethers.getContractFactory('HeroTicket', deployer);
 
-  // 15초 대기
-  await new Promise((resolve) => setTimeout(resolve, 15000));
-
-  const tx2 = await heroTicket.requests(tx.data);
-
-  console.log(tx2);
-  // TicketImageConsumer = await ethers.getContractFactory(
-  //   'TicketImageConsumer',
-  //   deployer
-  // );
-
-  // const ticketImageConsumer = TicketImageConsumer.attach(
+  // const heroTicket = HeroTicket.attach(
   //   '0xE06364a013C37375ebFDDf0fb01C3262Ed385D69'
   // );
 
-  // const tx = await ticketImageConsumer.requestTicketImage(
+  // const tx = await heroTicket.requestTicketImage(
   //   process.env.ENCRYPTED_SECRET_URLS,
   //   'Seoul',
   //   'YOASOBI Concert'
@@ -91,11 +74,12 @@ const main = async () => {
 
   // console.log(tx);
 
-  // const request = await ticketImageConsumer.requests(
-  //   '0xbb8ea11768b3c9106441b9588cc4fbe20915f30b78771cd237bec0e408dafd85'
-  // );
+  // // 15초 대기
+  // await new Promise((resolve) => setTimeout(resolve, 15000));
 
-  // console.log(request);
+  // const tx2 = await heroTicket.requests(tx.data);
+
+  // console.log(tx2);
 
   // Verify contracts
 };

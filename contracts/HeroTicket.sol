@@ -72,12 +72,30 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         return _ticket.whiteList(to); // 티켓 컨트랙트의 isWhiteListed 함수 호출
     }
 
-    function isIssuer(
-        address ticketAddress,
-        address to
-    ) external view returns (bool) {
+    function ticketInfo(
+        address ticketAddress
+    )
+        external
+        view
+        returns (address, uint256, uint256, uint256, uint256, uint256)
+    {
         Ticket _ticket = Ticket(ticketAddress); // 티켓 컨트랙트 인스턴스 생성
-        return _ticket.issuerAddress() == to; // 티켓 컨트랙트의 issuer와 to가 같은지 확인
+
+        address issuer = _ticket.issuerAddress(); // 티켓 발행자 주소
+        uint256 remainTicketAmount = _ticket.remainTicketAmount(); // 남은 티켓 수량
+        uint256 ticketEthPrice = _ticket.ticketEthPrice(); // 티켓 결제 금액(ether)
+        uint256 ticketTokenPrice = _ticket.ticketTokenPrice(); // 티켓 결제 금액(token)
+        uint256 ticketSaleStartAt = _ticket.ticketSaleStartAt(); // 티켓 판매 시작 시점
+        uint256 ticketSaleEndAt = _ticket.ticketSaleEndAt(); // 티켓 판매 종료 시점
+
+        return (
+            issuer,
+            remainTicketAmount,
+            ticketEthPrice,
+            ticketTokenPrice,
+            ticketSaleStartAt,
+            ticketSaleEndAt
+        ); // 티켓 정보 반환
     }
 
     // NFT Factory로 부터 Hero Ticket NFT 생성 및 TBA 생성
