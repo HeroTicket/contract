@@ -9,21 +9,21 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract TicketImageConsumer is FunctionsClient, ConfirmedOwner {
     using FunctionsRequest for FunctionsRequest.Request;
 
-    uint256 public requestsCounter;
+    uint256 public requestsCounter; // 티켓 이미지 요청 카운터
 
-    string public source;
-    bytes32 public donId;
-    uint64 public subscriptionId;
-    uint32 public gasLimit;
+    string public source; // chainlink functions source
+    bytes32 public donId; // chainlink donId
+    uint64 public subscriptionId; // chainlink subscriptionId
+    uint32 public gasLimit; // chainlink gasLimit
 
-    mapping(bytes32 => TicketImage) public requests;
+    mapping(bytes32 => TicketImage) public requests; // 티켓 이미지 요청 매핑
 
     struct TicketImage {
-        uint256 index;
-        string location;
-        string keyword;
-        string ipfsHash;
-        bool isUsed;
+        uint256 index; // 티켓 이미지 요청 인덱스
+        string location; // 티켓 이미지 위치 파라미터 (ex: "서울")
+        string keyword; // 티켓 이미지 키워드 파라미터 (ex: "메시")
+        string ipfsHash; // 티켓 이미지 ipfs 해시
+        bool isFulfilled; // 티켓 이미지 요청 완료 여부
     }
 
     event TicketImageRequestCreated(
@@ -90,7 +90,7 @@ contract TicketImageConsumer is FunctionsClient, ConfirmedOwner {
             location: location,
             keyword: kewyword,
             ipfsHash: "",
-            isUsed: false
+            isFulfilled: false
         });
 
         emit TicketImageRequestCreated(requestId, args[0], args[1]);
@@ -128,6 +128,7 @@ contract TicketImageConsumer is FunctionsClient, ConfirmedOwner {
         string memory ipfsHash = string(response);
 
         requests[requestId].ipfsHash = ipfsHash;
+        requests[requestId].isFulfilled = true;
 
         emit TicketImageRequestFulfilled(requestId, ipfsHash);
     }

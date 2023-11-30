@@ -12,6 +12,7 @@ contract HeroToken is ERC20, Ownable(msg.sender) {
         _mint(msg.sender, 100000000e18);
     }
 
+    // 토큰 결제를 위해 토큰을 전송하는 함수
     function transferFromForPayment(
         address sender,
         address recipient,
@@ -21,6 +22,7 @@ contract HeroToken is ERC20, Ownable(msg.sender) {
         return true;
     }
 
+    // 토큰 결제를 위해 토큰 인출을 승인하는 함수
     function approveForPayment(
         address owner,
         address spender,
@@ -30,6 +32,7 @@ contract HeroToken is ERC20, Ownable(msg.sender) {
         return true;
     }
 
+    // 토큰 결제를 위해 토큰을 생성하는 함수
     function mintForPayment(uint256 amount) external onlyOwner returns (bool) {
         _mint(msg.sender, amount);
         return true;

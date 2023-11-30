@@ -31,7 +31,7 @@ var (
 
 // HeroticketMetaData contains all meta data concerning the Heroticket contract.
 var HeroticketMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"accountImpl\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"registryImpl\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"InvalidAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidPaymentAmount\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"OwnableInvalidOwner\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"OwnableUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TBAAlreadyExists\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TicketNotIssuedByHeroTicket\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"TBACreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_ticketAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_ticketName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_ticketSymbol\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_ticketUri\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_initialOwner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_ticketAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_ticketEthPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_ticketTokenPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_saleDuration\",\"type\":\"uint256\"}],\"name\":\"TicketIssued\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_ticketAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_ticketId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"enumITicketExtended.TicketSaleType\",\"name\":\"_saleType\",\"type\":\"uint8\"}],\"name\":\"TicketSold\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_issuer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_ticketTokenPrice\",\"type\":\"uint256\"}],\"name\":\"TokenPaymentForIssueTicket\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"TokenReward\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"_tickets\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_ticketAddress\",\"type\":\"address\"}],\"name\":\"buyTicketByEther\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_ticketAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_buyer\",\"type\":\"address\"}],\"name\":\"buyTicketByToken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"tokenURI\",\"type\":\"string\"}],\"name\":\"createTBA\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"ticketName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ticketSymbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ticketUri\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"issuer\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ticketAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ticketEthPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ticketTokenPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"saleDuration\",\"type\":\"uint256\"}],\"name\":\"issueTicket\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"issuedTicket\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"ownedTickets\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"tbaAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_ticketAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"updateWhiteList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"accountImpl\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"registryImpl\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"ticketImageConsumerImpl\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"InvalidAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidPaymentAmount\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"OwnableInvalidOwner\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"OwnableUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TBAAlreadyExists\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TicketNotIssuedByHeroTicket\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"TBACreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"requestId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"location\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"keyword\",\"type\":\"string\"}],\"name\":\"TicketImageRequestCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_ticketAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_ticketName\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_ticketSymbol\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"_ticketUri\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_initialOwner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_ticketAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_ticketEthPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_ticketTokenPrice\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_saleDuration\",\"type\":\"uint256\"}],\"name\":\"TicketIssued\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_ticketAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_ticketId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"enumITicketExtended.TicketSaleType\",\"name\":\"_saleType\",\"type\":\"uint8\"}],\"name\":\"TicketSold\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_issuer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_ticketTokenPrice\",\"type\":\"uint256\"}],\"name\":\"TokenPaymentForIssueTicket\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"TokenReward\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"_tickets\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_ticketAddress\",\"type\":\"address\"}],\"name\":\"buyTicketByEther\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_ticketAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_buyer\",\"type\":\"address\"}],\"name\":\"buyTicketByToken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"tokenURI\",\"type\":\"string\"}],\"name\":\"createTBA\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"ticketName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ticketSymbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ticketUri\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"issuer\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ticketAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ticketEthPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ticketTokenPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"saleDuration\",\"type\":\"uint256\"}],\"name\":\"issueTicket\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"issuedTicket\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"ownedTickets\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"encryptedSecretsUrls\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"location\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"keyword\",\"type\":\"string\"}],\"name\":\"requestTicketImage\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"requestId\",\"type\":\"bytes32\"}],\"name\":\"requests\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"tbaAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_ticketAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"updateWhiteList\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
 }
 
 // HeroticketABI is the input ABI used to generate the binding from.
@@ -304,6 +304,41 @@ func (_Heroticket *HeroticketCallerSession) Owner() (common.Address, error) {
 	return _Heroticket.Contract.Owner(&_Heroticket.CallOpts)
 }
 
+// Requests is a free data retrieval call binding the contract method 0x9d866985.
+//
+// Solidity: function requests(bytes32 requestId) view returns(uint256, string, string, string, bool)
+func (_Heroticket *HeroticketCaller) Requests(opts *bind.CallOpts, requestId [32]byte) (*big.Int, string, string, string, bool, error) {
+	var out []interface{}
+	err := _Heroticket.contract.Call(opts, &out, "requests", requestId)
+
+	if err != nil {
+		return *new(*big.Int), *new(string), *new(string), *new(string), *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	out1 := *abi.ConvertType(out[1], new(string)).(*string)
+	out2 := *abi.ConvertType(out[2], new(string)).(*string)
+	out3 := *abi.ConvertType(out[3], new(string)).(*string)
+	out4 := *abi.ConvertType(out[4], new(bool)).(*bool)
+
+	return out0, out1, out2, out3, out4, err
+
+}
+
+// Requests is a free data retrieval call binding the contract method 0x9d866985.
+//
+// Solidity: function requests(bytes32 requestId) view returns(uint256, string, string, string, bool)
+func (_Heroticket *HeroticketSession) Requests(requestId [32]byte) (*big.Int, string, string, string, bool, error) {
+	return _Heroticket.Contract.Requests(&_Heroticket.CallOpts, requestId)
+}
+
+// Requests is a free data retrieval call binding the contract method 0x9d866985.
+//
+// Solidity: function requests(bytes32 requestId) view returns(uint256, string, string, string, bool)
+func (_Heroticket *HeroticketCallerSession) Requests(requestId [32]byte) (*big.Int, string, string, string, bool, error) {
+	return _Heroticket.Contract.Requests(&_Heroticket.CallOpts, requestId)
+}
+
 // TbaAddress is a free data retrieval call binding the contract method 0x97cd6077.
 //
 // Solidity: function tbaAddress(address ) view returns(address)
@@ -438,6 +473,27 @@ func (_Heroticket *HeroticketSession) RenounceOwnership() (*types.Transaction, e
 // Solidity: function renounceOwnership() returns()
 func (_Heroticket *HeroticketTransactorSession) RenounceOwnership() (*types.Transaction, error) {
 	return _Heroticket.Contract.RenounceOwnership(&_Heroticket.TransactOpts)
+}
+
+// RequestTicketImage is a paid mutator transaction binding the contract method 0x22d472df.
+//
+// Solidity: function requestTicketImage(bytes encryptedSecretsUrls, string location, string keyword) returns(bytes32)
+func (_Heroticket *HeroticketTransactor) RequestTicketImage(opts *bind.TransactOpts, encryptedSecretsUrls []byte, location string, keyword string) (*types.Transaction, error) {
+	return _Heroticket.contract.Transact(opts, "requestTicketImage", encryptedSecretsUrls, location, keyword)
+}
+
+// RequestTicketImage is a paid mutator transaction binding the contract method 0x22d472df.
+//
+// Solidity: function requestTicketImage(bytes encryptedSecretsUrls, string location, string keyword) returns(bytes32)
+func (_Heroticket *HeroticketSession) RequestTicketImage(encryptedSecretsUrls []byte, location string, keyword string) (*types.Transaction, error) {
+	return _Heroticket.Contract.RequestTicketImage(&_Heroticket.TransactOpts, encryptedSecretsUrls, location, keyword)
+}
+
+// RequestTicketImage is a paid mutator transaction binding the contract method 0x22d472df.
+//
+// Solidity: function requestTicketImage(bytes encryptedSecretsUrls, string location, string keyword) returns(bytes32)
+func (_Heroticket *HeroticketTransactorSession) RequestTicketImage(encryptedSecretsUrls []byte, location string, keyword string) (*types.Transaction, error) {
+	return _Heroticket.Contract.RequestTicketImage(&_Heroticket.TransactOpts, encryptedSecretsUrls, location, keyword)
 }
 
 // TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
@@ -783,6 +839,152 @@ func (_Heroticket *HeroticketFilterer) WatchTBACreated(opts *bind.WatchOpts, sin
 func (_Heroticket *HeroticketFilterer) ParseTBACreated(log types.Log) (*HeroticketTBACreated, error) {
 	event := new(HeroticketTBACreated)
 	if err := _Heroticket.contract.UnpackLog(event, "TBACreated", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// HeroticketTicketImageRequestCreatedIterator is returned from FilterTicketImageRequestCreated and is used to iterate over the raw logs and unpacked data for TicketImageRequestCreated events raised by the Heroticket contract.
+type HeroticketTicketImageRequestCreatedIterator struct {
+	Event *HeroticketTicketImageRequestCreated // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *HeroticketTicketImageRequestCreatedIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(HeroticketTicketImageRequestCreated)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(HeroticketTicketImageRequestCreated)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *HeroticketTicketImageRequestCreatedIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *HeroticketTicketImageRequestCreatedIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// HeroticketTicketImageRequestCreated represents a TicketImageRequestCreated event raised by the Heroticket contract.
+type HeroticketTicketImageRequestCreated struct {
+	RequestId [32]byte
+	Location  string
+	Keyword   string
+	Raw       types.Log // Blockchain specific contextual infos
+}
+
+// FilterTicketImageRequestCreated is a free log retrieval operation binding the contract event 0xa65f4c2bddbaa2fb5b8e03388cfd799b0402d2f3c92fc80b5f1c8f10922376e2.
+//
+// Solidity: event TicketImageRequestCreated(bytes32 indexed requestId, string location, string keyword)
+func (_Heroticket *HeroticketFilterer) FilterTicketImageRequestCreated(opts *bind.FilterOpts, requestId [][32]byte) (*HeroticketTicketImageRequestCreatedIterator, error) {
+
+	var requestIdRule []interface{}
+	for _, requestIdItem := range requestId {
+		requestIdRule = append(requestIdRule, requestIdItem)
+	}
+
+	logs, sub, err := _Heroticket.contract.FilterLogs(opts, "TicketImageRequestCreated", requestIdRule)
+	if err != nil {
+		return nil, err
+	}
+	return &HeroticketTicketImageRequestCreatedIterator{contract: _Heroticket.contract, event: "TicketImageRequestCreated", logs: logs, sub: sub}, nil
+}
+
+// WatchTicketImageRequestCreated is a free log subscription operation binding the contract event 0xa65f4c2bddbaa2fb5b8e03388cfd799b0402d2f3c92fc80b5f1c8f10922376e2.
+//
+// Solidity: event TicketImageRequestCreated(bytes32 indexed requestId, string location, string keyword)
+func (_Heroticket *HeroticketFilterer) WatchTicketImageRequestCreated(opts *bind.WatchOpts, sink chan<- *HeroticketTicketImageRequestCreated, requestId [][32]byte) (event.Subscription, error) {
+
+	var requestIdRule []interface{}
+	for _, requestIdItem := range requestId {
+		requestIdRule = append(requestIdRule, requestIdItem)
+	}
+
+	logs, sub, err := _Heroticket.contract.WatchLogs(opts, "TicketImageRequestCreated", requestIdRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(HeroticketTicketImageRequestCreated)
+				if err := _Heroticket.contract.UnpackLog(event, "TicketImageRequestCreated", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseTicketImageRequestCreated is a log parse operation binding the contract event 0xa65f4c2bddbaa2fb5b8e03388cfd799b0402d2f3c92fc80b5f1c8f10922376e2.
+//
+// Solidity: event TicketImageRequestCreated(bytes32 indexed requestId, string location, string keyword)
+func (_Heroticket *HeroticketFilterer) ParseTicketImageRequestCreated(log types.Log) (*HeroticketTicketImageRequestCreated, error) {
+	event := new(HeroticketTicketImageRequestCreated)
+	if err := _Heroticket.contract.UnpackLog(event, "TicketImageRequestCreated", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
