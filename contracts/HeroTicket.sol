@@ -64,6 +64,14 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         return _ticket.hasTicket(owner); // 티켓 컨트랙트의 hasTicket 함수 호출
     }
 
+    function isWhiteListed(
+        address ticketAddress,
+        address to
+    ) external view returns (bool) {
+        Ticket _ticket = Ticket(ticketAddress); // 티켓 컨트랙트 인스턴스 생성
+        return _ticket.whiteList(to); // 티켓 컨트랙트의 isWhiteListed 함수 호출
+    }
+
     // NFT Factory로 부터 Hero Ticket NFT 생성 및 TBA 생성
     function createTBA(
         address to,
