@@ -65,39 +65,41 @@ const deployAndVerifyContracts = async () => {
 
   console.log("owner of TicketImageConsumer:", await TicketImageConsumer.owner());
 
-  await verify(TicketImageConsumer.target, ticketImageConsumerArgs);
+  // await verify(TicketImageConsumer.target, ticketImageConsumerArgs);
 
-  await verify(HeroTicket.target, heroTicketArgs);
+  // await verify(HeroTicket.target, heroTicketArgs);
 };
 
 const requestImage = async () => {
-  // const [deployer] = await ethers.getSigners();
+  const [deployer] = await ethers.getSigners();
 
-  // const HeroTicket = await ethers.getContractFactory('HeroTicket', deployer);
+  const HeroTicket = await ethers.getContractFactory('HeroTicket', deployer);
 
-  // const heroTicket = HeroTicket.attach("0xB97b45C18C9ac6C9a1da1e275B660B1116EE3599");
+  const heroTicket = HeroTicket.attach("0x0310F71bf9631d8DaB3e70181250a223411e867c");
 
-  // const requestTicketImageTx = await heroTicket.requestTicketImage(
-  //   process.env.ENCRYPTED_SECRET_URLS,
-  //   'Seoul, South Korea',
-  //   'BTS Concert'
-  // );
+  /*
+  const requestTicketImageTx = await heroTicket.requestTicketImage(
+    process.env.ENCRYPTED_SECRET_URLS,
+    'Seoul, South Korea',
+    'BTS Concert'
+  );
 
-  // const requestTicketImageReceipt = await requestTicketImageTx.wait();
-
-
-  // console.log("requestTicketImageTxHash:", requestTicketImageReceipt.hash);
+  const requestTicketImageReceipt = await requestTicketImageTx.wait();
 
 
-  // const requestData = await heroTicket.requests("0xF1FA38C4739AE0211C21DF6148FF5E20507F7D3986EF87027C58238D09E5A55C");
+  console.log("requestTicketImageTx:", requestTicketImageReceipt);
+*/
 
-  // console.log("requestData:", requestData);
+  const requestData = await heroTicket.requests("0x845F3C8A745376052FBF837CD25934B263ADE7F25F14E4D2D0E513A106C4FAAC");
+
+  console.log("requestData:", requestData);
 }
 
 const main = async () => {
   // Deploy and verify contracts
-  await deployAndVerifyContracts();
+  //await deployAndVerifyContracts();
 
+  await requestImage();
   /*
     TicketImageConsumer contract address: 0x4C8D71324Ff912F39e6dFEE02b236ef8Ee1f162E
     HeroTicket contract address: 0xAf05d5067A63a660691e0943E089a93AE7b9CBA3

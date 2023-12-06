@@ -51,7 +51,7 @@ const ipfsPinRequest = Functions.makeHttpRequest({
   url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
   method: 'POST',
   headers: {
-    Authorization: `Bearer ${pinataJwt} `,
+    Authorization: `Bearer ${pinataJwt}`,
     'Content-Type': 'application/json',
   },
   data: {

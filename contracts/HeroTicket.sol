@@ -147,7 +147,7 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         bytes memory encryptedSecretsUrls,
         string memory location,
         string memory keyword
-    ) external onlyOwner returns (bytes32) {
+    ) external returns (bytes32) {
         // ticketImageConsumer 컨트랙트로부터 requestId를 받아옴
         bytes32 requestId = _ticketImageConsumer.requestTicketImage(
             encryptedSecretsUrls,
