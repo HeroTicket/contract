@@ -294,9 +294,12 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         if (!issuedTicket[_ticketAddress]) revert TicketNotIssuedByHeroTicket(); // 티켓 컨트랙트 주소가 아닌 경우
         if (to == address(0x00)) revert InvalidAddress(); // 대상 주소가 없는 경우
 
+        address toAccount = tbaAddress[to]; // 구매자의 TBA 주소
+        if (toAccount == address(0x00)) revert InvalidAddress(); // 구매자의 TBA 주소가 없는 경우
+
         Ticket _ticket = Ticket(_ticketAddress); // 티켓 컨트랙트 인스턴스 생성
 
-        _ticket.updateWhiteList(to, true); // 티켓 컨트랙트의 화이트리스트 업데이트
+        _ticket.updateWhiteList(toAccount, true); // 티켓 컨트랙트의 화이트리스트 업데이트
     }
 
     // 랜덤 salt 생성

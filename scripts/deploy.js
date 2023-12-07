@@ -65,10 +65,25 @@ const deployAndVerifyContracts = async () => {
 
   console.log("owner of TicketImageConsumer:", await TicketImageConsumer.owner());
 
-  // await verify(TicketImageConsumer.target, ticketImageConsumerArgs);
+  await verify(TicketImageConsumer.target, ticketImageConsumerArgs);
 
-  // await verify(HeroTicket.target, heroTicketArgs);
+  await verify(HeroTicket.target, heroTicketArgs);
 };
+
+const deployAndVerifyContracts2 = async () => {
+  const [deployer] = await ethers.getSigners();
+  console.log('Deploying contracts with the account:', deployer.address);
+
+  const tokenArgs = [
+    "HeroToken",
+    "HERO",
+  ];
+
+  const Token = await deploy('HeroToken', deployer, tokenArgs);
+
+  // verify contracts
+  await verify(Token.target, tokenArgs);
+}
 
 const requestImage = async () => {
   const [deployer] = await ethers.getSigners();
@@ -97,12 +112,13 @@ const requestImage = async () => {
 
 const main = async () => {
   // Deploy and verify contracts
-  //await deployAndVerifyContracts();
+  // await deployAndVerifyContracts();
+  await deployAndVerifyContracts2();
 
-  await requestImage();
+  //await requestImage();
   /*
-    TicketImageConsumer contract address: 0x4C8D71324Ff912F39e6dFEE02b236ef8Ee1f162E
-    HeroTicket contract address: 0xAf05d5067A63a660691e0943E089a93AE7b9CBA3
+    TicketImageConsumer contract address: 0xE1F034C42A96679f196869c987AF77aa8E123C10
+    HeroTicket contract address: 0xfF14bCd3bF0F5614334c8DBa02FDC9f78dFBbc81
   */
 };
 
