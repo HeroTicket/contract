@@ -112,13 +112,13 @@ const requestImage = async () => {
 
 const main = async () => {
   // Deploy and verify contracts
-  // await deployAndVerifyContracts();
-  await deployAndVerifyContracts2();
+  await deployAndVerifyContracts();
+  // await deployAndVerifyContracts2();
 
   //await requestImage();
   /*
-    TicketImageConsumer contract address: 0xE1F034C42A96679f196869c987AF77aa8E123C10
-    HeroTicket contract address: 0xfF14bCd3bF0F5614334c8DBa02FDC9f78dFBbc81
+    TicketImageConsumer contract address: x`
+    HeroTicket contract address: 0xA300952f9bcC3FD006B141ac495d718C69AF5016
   */
 };
 

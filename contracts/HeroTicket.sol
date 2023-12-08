@@ -241,6 +241,8 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
             buyerAccount
         ); // 티켓 구매
 
+        ownedTickets[buyerAccount].push(_ticketAddress);
+
         _tokenReward(buyerAccount, 1000); // 토큰 보상 지급
 
         emit TicketSold(
@@ -275,6 +277,8 @@ contract HeroTicket is Ownable(msg.sender), ITicketExtended {
         _heroToken.approveForPayment(buyerAccount, _ticketAddress, ticketPrice); // 티켓 컨트랙트에서 transferFrom을 호출하기 위한 토큰 승인
 
         uint256 newTicketId = _ticket.buyTicketByToken(buyerAccount); // 티켓 구매
+
+        ownedTickets[buyerAccount].push(_ticketAddress);
 
         emit TicketSold(
             _ticketAddress,
